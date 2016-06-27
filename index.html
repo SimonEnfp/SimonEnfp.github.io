@@ -253,6 +253,167 @@
             
               
                 
+                <a class="post-title-link" href="/2016/06/27/Android透明状态栏设置/" itemprop="url">
+                  Android透明状态栏设置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-27T11:23:10+08:00" content="2016-06-27">
+              2016-06-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/技术分享/" itemprop="url" rel="index">
+                    <span itemprop="name">技术分享</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/27/Android透明状态栏设置/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/27/Android透明状态栏设置/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>应公司需求，为了让app界面在4.4版本之后的客户端更加美观和谐，欲使手机顶部状态栏(statusBar)与app主题色保持一致，所以想让statusBar保持透明，显示UI主题背景。</p>
+<ul>
+<li><p>适用于Android KITKAT(API 19) 之后</p>
+</li>
+<li><p>使用主题<code>Theme.Design.NoActionBar</code>，这里是自定义的Actionbar。</p>
+</li>
+</ul>
+<p><em>先上代码</em></p>
+<hr>
+<pre><code>    if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT 
+        &amp;&amp; Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.LOLLIPOP){
+        Window window = activity.getWindow();
+
+//      set transparent status and let main layout extend to status
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+//      set transparent navigation and let main layout extend to navigation
+//      window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
+        ViewGroup mContentView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
+//      set contentView rootView padding in order to set aside the location of the power strip
+        View rootView = mContentView.getChildAt(0);
+        if (rootView != null){
+//          rootView.setFitsSystemWindows(true);
+            rootView.setPadding(0,getStatusBarHeight(activity),0,0);
+        }
+    }
+</code></pre><hr>
+<h4 id="1-在API-19-API-21之间："><a href="#1-在API-19-API-21之间：" class="headerlink" title="1. 在API 19 ~ API 21之间："></a>1. 在API 19 ~ API 21之间：</h4><p>window增加这个Flag，<a href="https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_TRANSLUCENT_STATUS" target="_blank" rel="external">FLAG_TRANSLUCENT_STATUS</a>，作用是使系统状态栏背景透明，这时候会发现我们的ContentView布局延伸到了手机顶部被状态栏覆盖，如图:<br><img src="http://o6w24t5lg.bkt.clouddn.com/statusBar1.png?%09%20watermark/2/text/U2ltb25FbmZwJ3MgYmxvZw==/font/5a6L5L2T/fontsize/500/fill/IzBFQUZFMg==/dissolve/99/gravity/NorthEast/dx/10/dy/10" alt="此处输入图片的描述"><br>这样显然是不行的，我们自己的UI被挡住，所以需要下面的代码:</p>
+<pre><code>//rootView.setFitsSystemWindows(true);
+rootView.setPadding(0,getStatusBarHeight(activity),0,0);
+</code></pre><p>这里有两种方法:第一种是根布局设置<a href="https://developer.android.com/reference/android/view/View.html#attr_android:fitsSystemWindows" target="_blank" rel="external">FitsSystemWindows</a>为ture，Android官方文档是这样解释的：</p>
+<p><strong><em>Boolean internal attribute to adjust view layout based on system windows such as the status bar. If true, adjusts the padding of this view to leave space for the system windows.</em></strong><br>我的理解是如果设置为true，那就调整这个布局的padding，为系统窗口留出空间，这里指的就是顶部的statusBar和底部的Navigationbar，但是我的需求是仅仅让顶部预留空间即可，底部保持系统样式，所以，根据这个属性的原理，可以有另一种设置方法：</p>
+<pre><code>`rootView.setPadding(0,getStatusBarHeight(activity),0,0);`
+</code></pre><p>这里直接为自己的根布局设置一个与statusBar相同高度的padding即可。<br>完成之后，效果如下：<br><img src="http://o6w24t5lg.bkt.clouddn.com/statusBar2.png" alt="此处输入图片的描述"></p>
+<h4 id="2-在API-21-以上："><a href="#2-在API-21-以上：" class="headerlink" title="2. 在API 21 以上："></a>2. 在API 21 以上：</h4><blockquote>
+<pre><code>window.getDecorView().setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+          | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+  window.setStatusBarColor(Color.TRANSPARENT);
+</code></pre></blockquote>
+<p>这里第一步是通过DecorView设置其属性SystemUiVisibility，SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN来使自己的根布局充满全屏，第二部是通过window在API 21之后新增属性StatusBarColor，设置statusbar透明<br>后面再使根布局为系统窗口留出Padding与API 19方法同理，无需多说</p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/05/09/Hexo-Github搭建个人博客/" itemprop="url">
                   Hexo+Github搭建个人博客
                 </a>
@@ -356,7 +517,7 @@
 <li>修改完之后我们这时候可以把我们的本地站点部署到github上了:<br>这里先执行一句话:<br><code>npm install hexo-deployer-git --save</code>(因为在Hexo 3.0 后server被单独出来了，需要安装server)</li>
 <li>然后输入:<br><code>hexo d</code>(hexo deploy的缩写)<br>随后按照提示，输入Github的账号密码，等待上传。<br>这样你就可以通过<a href="http://yourname.github.io/来访问自己刚刚上传的网站了。" target="_blank" rel="external">http://yourname.github.io/来访问自己刚刚上传的网站了。</a></li>
 <li>发布一篇新文章:<br>输入：<code>hexo n &quot;我的第一篇博客&quot;</code>(我的第一篇博客为文章的标题)，执行了此命令后你会发现在Hexo/source/_post中生成一个我的”第一篇博客.md”文件，用编辑器打开编写即可，在此推荐一个编辑器<a href="https://www.zybuluo.com/mdeditor" target="_blank" rel="external">MarkDown</a>用于编写网站，关于MarkDown语法介绍有很多，在此再推荐一个<a href="http://wowubuntu.com/markdown/basic.html" target="_blank" rel="external">MarkDown语法介绍</a></li>
-<li>然后输入<br>hexo -g(生成文件)<br>hexo -s（可以先本地预览确认无误后上传）<br>hexo -d(上传站点)<br>即可完成发布</li>
+<li>然后输入<br>hexo g(生成文件)<br>hexo s（可以先本地预览确认无误后上传）<br>hexo d(上传站点)<br>即可完成发布</li>
 </ul>
 <p><strong>当然这时你会发现，你的界面看起来很low，并不是像别人博客那样看起来那么让人赏心悦目，别着急，这个平台是属于你自己的，你可以做主，下面介绍一下主题的配置</strong>。</p>
 <h3 id="4-博客主题配置"><a href="#4-博客主题配置" class="headerlink" title="4.博客主题配置"></a>4.博客主题配置</h3><ul>
@@ -435,7 +596,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">1</span>
+              <span class="site-state-item-count">2</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -449,6 +610,13 @@
             </div>
           
 
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
           
 
         </nav>
