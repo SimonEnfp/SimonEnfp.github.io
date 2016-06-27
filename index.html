@@ -364,7 +364,9 @@ rootView.setPadding(0,getStatusBarHeight(activity),0,0);
           | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
   window.setStatusBarColor(Color.TRANSPARENT);
 </code></pre></blockquote>
-<p>这里第一步是通过DecorView设置其属性SystemUiVisibility，SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN来使自己的根布局充满全屏，第二部是通过window在API 21之后新增属性StatusBarColor，设置statusbar透明<br>后面再使根布局为系统窗口留出Padding与API 19方法同理，无需多说</p>
+<p>这里第一步是通过DecorView设置其属性SystemUiVisibility，SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN来使自己的根布局充满全屏，第二部是通过window在API 21之后新增属性StatusBarColor，设置statusbar透明，后面再使根布局为系统窗口留出Padding与API 19方法同理，无需多说</p>
+<hr>
+<p><strong>具体源码在这里查看：</strong><br><a href="https://github.com/simonenfp/007-A" target="_blank" rel="external"><strong>https://github.com/simonenfp/007-A</strong></a></p>
 
           
         
@@ -610,13 +612,6 @@ rootView.setPadding(0,getStatusBarHeight(activity),0,0);
             </div>
           
 
-          
-            <div class="site-state-item site-state-tags">
-              <a href="/tags">
-                <span class="site-state-item-count">1</span>
-                <span class="site-state-item-name">标签</span>
-              </a>
-            </div>
           
 
         </nav>
