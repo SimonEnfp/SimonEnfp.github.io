@@ -5,7 +5,7 @@ tags:
 categories: 学习笔记
 ---
 
-一般的使用方法是现在主线程创建一个Handler，等待接收消息
+一般使用方法是现在主线程创建一个Handler，等待接收消息
 
 ```ruby
     Handler handler = new Handler(new Handler.Callback()     {
