@@ -44,7 +44,7 @@ public static void prepareMainLooper() {
     }
 }
 ```
-prepare会new一个Looper并通过sThreadLocal把此Looper保存到当前线程中去，如下
+prepare会new一个Looper并通过sThreadLocal把此Looper保存到当前线程中去，如下：
 ```ruby
 private static void prepare(boolean quitAllowed) {
     if (sThreadLocal.get() != null) {
