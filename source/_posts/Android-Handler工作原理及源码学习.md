@@ -1,11 +1,11 @@
----
+﻿---
 title: Android Handler工作原理及源码学习
 date: 2016-09-01 16:15:28
 tags:
 categories: 学习笔记
 ---
 
-一般使用方法是现在主线程创建一个Handler，等待接收消息
+一般使用方法是先在主线程创建一个Handler，等待接收消息
 
 ```ruby
     Handler handler = new Handler(new Handler.Callback()     {
@@ -137,7 +137,7 @@ private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMilli
 }
 ```
 这里的MessageQueue就是创建Handler的所在线程的Looper的MessageQueue，调用它的
-enqueueMessage方法，其实就是往消息队列里插入一条消息，主要通过无线循环的next方法来从消息队列中获取新消息，当有新消息到来时，next方法会返回这条消息并从单链表移除
+enqueueMessage方法，其实就是往消息队列里插入一条消息，主要通过无限循环的next方法来从消息队列中获取新消息，当有新消息到来时，next方法会返回这条消息并从单链表移除
 Looper的loop方法：
 ```
 for (;;) {
@@ -174,7 +174,7 @@ for (;;) {
     msg.recycleUnchecked();
 }
 ```
-可以发现，loop也是一个死循环，loop方法会调用MessageQueue的next方法来获取新消息，如果next返回了新消息，Looper就会处理这这条消息：
+可以发现，loop也是一个死循环，loop方法会调用MessageQueue的next方法来获取新消息，如果next返回了新消息，Looper就会处理这条消息：
 msg.target.dispatchMessage(msg);
 这里的msg.target是发送这条消息的Handler对象，这样Handler发送的消息最终又交给它的dispatchMessage来处理了，
 ```
