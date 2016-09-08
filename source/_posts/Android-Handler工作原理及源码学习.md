@@ -32,7 +32,7 @@ public Handler(Callback callback, boolean async) {
 ```
 
 
-由于主线程已经创建一个Looper因为可以直接创建Handler，在ActvityThread的main方法中，
+由于主线程已经创建一个Looper因此可以直接创建Handler，在ActvityThread的main方法中，
 ```ruby
 public static void prepareMainLooper() {
     prepare(false);
