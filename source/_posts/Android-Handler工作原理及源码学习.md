@@ -7,7 +7,7 @@ categories: 学习笔记
 
 一般使用方法是先在主线程创建一个Handler，等待接收消息
 
-```ruby
+```python
     Handler handler = new Handler(new Handler.Callback()     {
     @Override
     public boolean handleMessage(Message msg) {
@@ -18,7 +18,7 @@ categories: 学习笔记
 
 通过Handler构造方法可以知道在某个线程new Handler之前必须要为此线程创一个Looper否则会报错
 从Handler构造函数部分代码可以看出：
-```ruby
+```python
 public Handler(Callback callback, boolean async) {    
     mLooper = Looper.myLooper();
     if (mLooper == null) {
@@ -33,7 +33,7 @@ public Handler(Callback callback, boolean async) {
 
 
 由于主线程已经创建一个Looper因此可以直接创建Handler，在ActvityThread的main方法中，
-```ruby
+```python
 public static void prepareMainLooper() {
     prepare(false);
     synchronized (Looper.class) {
@@ -45,7 +45,7 @@ public static void prepareMainLooper() {
 }
 ```
 prepare会new一个Looper并通过sThreadLocal把此Looper保存到当前线程中去，如下：
-```ruby
+```python
 private static void prepare(boolean quitAllowed) {
     if (sThreadLocal.get() != null) {
         throw new RuntimeException("Only one Looper may be created per thread");
@@ -54,7 +54,7 @@ private static void prepare(boolean quitAllowed) {
 }
 ```
 看到new Looper方法：
-```ruby
+```python
 private Looper(boolean quitAllowed) {
     mQueue = new MessageQueue(quitAllowed);
     mThread = Thread.currentThread();
@@ -62,7 +62,7 @@ private Looper(boolean quitAllowed) {
 ```
 这里也为Looper初始化了一个MessageQueue
 sThreadLocal.set方法将此Looper保存到主线程的ThreadLocal.Values中去，以便查找指定线程的Looper
-```ruby
+```python
 public void set(T value) {
     Thread currentThread = Thread.currentThread();
     Values values = values(currentThread);
@@ -74,7 +74,7 @@ public void set(T value) {
 ```
 ThreadLocal是一个线程内部的数据存储类，就是在指定的线程存储和读取数据，以线程为区分，每个线程互不干涉
 在Looper中的ThreadLocal是静态final的
-```ruby
+```python
 static final ThreadLocal<Looper> sThreadLocal = new ThreadLocal<Looper>();
 ```
 这样就可以在不同的线程中访问同一个ThreadLocal对象，但是它们获取到的值却可以不一样，互相独立，因为每个线程创建它的Looper的时候都会用同一个ThreadLocal对象把Looper存储到自己的ThreadLocal.Values中去，这样每次获取的时候无论是在哪个线程都会通过同一个ThreadLocal对象到自己的ThreadLocal.Values里去获取。
@@ -83,13 +83,13 @@ static final ThreadLocal<Looper> sThreadLocal = new ThreadLocal<Looper>();
 创建handler的时候会调用下面这句来获取Looper
 mLooper = Looper.myLooper();通过这句话获取当前线程Looper
 其调用Looper的方法：
-```ruby
+```python
 public static @Nullable Looper myLooper() {
     return sThreadLocal.get();
 }
 ```
 调用ThreadLocal中get方法
-```
+```python
 public T get() {
     // Optimized for the fast path.
     Thread currentThread = Thread.currentThread();
@@ -110,7 +110,7 @@ public T get() {
 
 刚刚创建Looper的时候已经通过sThreadLocal的set方法把Looper存储到对应线程的Values里了，看来为的就是此刻
 
-```
+```python
 public Handler(Callback callback, boolean async) {
     mLooper = Looper.myLooper();
     if (mLooper == null) {
@@ -127,7 +127,7 @@ public Handler(Callback callback, boolean async) {
     
     handler.sendMessage(message);
 在Handler中最终会调用这个方法：
-```
+```python
 private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMillis) {
     msg.target = this;
     if (mAsynchronous) {
@@ -139,7 +139,7 @@ private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMilli
 这里的MessageQueue就是创建Handler的所在线程的Looper的MessageQueue，调用它的
 enqueueMessage方法，其实就是往消息队列里插入一条消息，主要通过无限循环的next方法来从消息队列中获取新消息，当有新消息到来时，next方法会返回这条消息并从单链表移除
 Looper的loop方法：
-```
+```python
 for (;;) {
     Message msg = queue.next(); // might block
     if (msg == null) {
@@ -177,7 +177,7 @@ for (;;) {
 可以发现，loop也是一个死循环，loop方法会调用MessageQueue的next方法来获取新消息，如果next返回了新消息，Looper就会处理这条消息：
 msg.target.dispatchMessage(msg);
 这里的msg.target是发送这条消息的Handler对象，这样Handler发送的消息最终又交给它的dispatchMessage来处理了，
-```
+```python
 public void dispatchMessage(Message msg) {
     if (msg.callback != null) {
         handleCallback(msg);
