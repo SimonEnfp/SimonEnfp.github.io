@@ -115,7 +115,7 @@ theme: landscape
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/simonenfp/simonenfp.github.io
+  repo: https://github.com/simonenfp/simonenfp.github.io.git
   branch: master
 ```
 
@@ -123,7 +123,7 @@ deploy:
 
     deploy:
       type: git
-      repo: https://github.com/simonenfp/simonenfp.github.io
+      repo: https://github.com/simonenfp/simonenfp.github.io.git
       branch: master
 
 _对于没接触过yamllint很容易入坑，你可以通过[yamllint][6]来保证yaml语法的正确性，这里的所有 : 后一定要有个空格，type，repo，branch前必须两个空格(这个相信大家应该能明白),反正千万不要忽略该有的空格，否则各种报错，本人就在此踩了很多坑，repo后是你一开始创建的github仓库地址_
