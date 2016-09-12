@@ -97,7 +97,7 @@
 <meta property="og:image" content="http://7xtufe.com1.z0.glb.clouddn.com/create-repo.png">
 <meta property="og:image" content="http://7xtufe.com1.z0.glb.clouddn.com/v.png">
 <meta property="og:image" content="http://7xtufe.com1.z0.glb.clouddn.com/hexo-v.png">
-<meta property="og:updated_time" content="2016-06-27T03:27:46.864Z">
+<meta property="og:updated_time" content="2016-09-12T04:28:28.778Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo+Github搭建个人博客">
 <meta name="twitter:description" content="hexo + github搭建属于自己的博客前言：拥有一个属于自己的技术博客，在这里可以展现你自己的个性，发挥你自己的优点，可以做一些技术分享，作为一个程序员，能够养成一个常写技术博客的习惯，乐于分享，不仅能让你自己的技术更加精湛(很多技术或许你会，但当你能把别人说会时，理解绝对是更深一层)，久而久之，逼格档次O(∩_∩)O，好了，废话不多说，进入正题
@@ -314,6 +314,15 @@
 
           
           
+             <span id="/2016/05/09/Hexo-Github搭建个人博客/" class="leancloud_visitors" data-flag-title="Hexo+Github搭建个人博客">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
 
           
         </div>
@@ -336,7 +345,7 @@
 </li>
 <li><a href="https://nodejs.org/en/" target="_blank" rel="external">Node.js</a>安装(一路下一步即可，环境变量会自动配置)。</li>
 <li>完后可以通过命令行查看下安装是否成功</li>
-<li><p>打开命令行分别输入：<br> <code>node -v</code><br> <code>npm -v</code><br> <code>git --</code></p>
+<li><p>打开命令行分别输入：<br> <code>node -v</code><br> <code>npm -v</code><br> <code>git --version</code></p>
 <p> 如果出现如下所示，说明安装成功：<br><img src="http://7xtufe.com1.z0.glb.clouddn.com/v.png" alt="版本号"></p>
 </li>
 </ul>
@@ -675,6 +684,105 @@
   
 
   
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("joaeuuc4hsqudUUwx4gIvGF6-gzGzoHsz", "E9UJsJpw1omCHuS22PdSpKoh");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
 
   
 
