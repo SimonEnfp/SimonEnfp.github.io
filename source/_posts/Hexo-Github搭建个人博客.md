@@ -20,7 +20,7 @@ categories: 技术分享
  - 打开命令行分别输入：
     `node -v`
     `npm -v`
-    `git --`
+    `git --version`
 
     如果出现如下所示，说明安装成功：
 ![版本号][4]
