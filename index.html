@@ -253,8 +253,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/09/01/Android-Handler工作原理及源码学习/" itemprop="url">
-                  Android Handler工作原理及源码学习
+                <a class="post-title-link" href="/2016/09/13/hexo博客多电脑协同发布/" itemprop="url">
+                  hexo博客多电脑协同发布
                 </a>
               
             
@@ -267,8 +267,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-01T16:15:28+08:00" content="2016-09-01">
-              2016-09-01
+            <time itemprop="dateCreated" datetime="2016-09-13T10:33:50+08:00" content="2016-09-13">
+              2016-09-13
             </time>
           </span>
 
@@ -281,8 +281,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/学习笔记/" itemprop="url" rel="index">
-                    <span itemprop="name">学习笔记</span>
+                  <a href="/categories/技术分享/" itemprop="url" rel="index">
+                    <span itemprop="name">技术分享</span>
                   </a>
                 </span>
 
@@ -297,8 +297,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/09/01/Android-Handler工作原理及源码学习/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/01/Android-Handler工作原理及源码学习/" itemprop="commentsCount"></span>
+                <a href="/2016/09/13/hexo博客多电脑协同发布/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/13/hexo博客多电脑协同发布/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -308,7 +308,7 @@
 
           
           
-             <span id="/2016/09/01/Android-Handler工作原理及源码学习/" class="leancloud_visitors" data-flag-title="Android Handler工作原理及源码学习">
+             <span id="/2016/09/13/hexo博客多电脑协同发布/" class="leancloud_visitors" data-flag-title="hexo博客多电脑协同发布">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -332,26 +332,20 @@
       
         
           
-            <p>一般使用方法是先在主线程创建一个Handler，等待接收消息</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    Handler handler = new Handler(new Handler.Callback()     &#123;</span><br><span class="line"><span class="meta">    @Override</span></span><br><span class="line">    public boolean handleMessage(Message msg) &#123;</span><br><span class="line">        <span class="keyword">return</span> true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<p>通过Handler构造方法可以知道在某个线程new Handler之前必须要为此线程创一个Looper否则会报错<br>从Handler构造函数部分代码可以看出：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public Handler(Callback callback, boolean <span class="keyword">async</span>) &#123;    </span><br><span class="line">    mLooper = Looper.myLooper();</span><br><span class="line">    <span class="keyword">if</span> (mLooper == null) &#123;</span><br><span class="line">        throw new RuntimeException(</span><br><span class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mQueue = mLooper.mQueue;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">    mAsynchronous = <span class="keyword">async</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>由于主线程已经创建一个Looper因此可以直接创建Handler，在ActvityThread的main方法中，<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static void prepareMainLooper() &#123;</span><br><span class="line">    prepare(false);</span><br><span class="line">    synchronized (Looper.<span class="keyword">class</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (sMainLooper != null) &#123;</span><br><span class="line">            throw new IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        sMainLooper = myLooper();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>prepare会new一个Looper并通过sThreadLocal把此Looper保存到当前线程中去，如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private static void prepare(boolean quitAllowed) &#123;</span><br><span class="line">    <span class="keyword">if</span> (sThreadLocal.get() != null) &#123;</span><br><span class="line">        throw new RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    sThreadLocal.set(new Looper(quitAllowed));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>看到new Looper方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private Looper(boolean quitAllowed) &#123;</span><br><span class="line">    mQueue = new MessageQueue(quitAllowed);</span><br><span class="line">    mThread = Thread.currentThread();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这里也为Looper初始化了一个MessageQueue<br>sThreadLocal.set方法将此Looper保存到主线程的ThreadLocal.Values中去，以便查找指定线程的Looper<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public void set(T value) &#123;</span><br><span class="line">    Thread currentThread = Thread.currentThread();</span><br><span class="line">    Values values = values(currentThread);</span><br><span class="line">    <span class="keyword">if</span> (values == null) &#123;</span><br><span class="line">        values = initializeValues(currentThread);</span><br><span class="line">    &#125;</span><br><span class="line">    values.put(this, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>ThreadLocal是一个线程内部的数据存储类，就是在指定的线程存储和读取数据，以线程为区分，每个线程互不干涉<br>在Looper中的ThreadLocal是静态final的<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static final ThreadLocal&lt;Looper&gt; sThreadLocal = new ThreadLocal&lt;Looper&gt;();</span><br></pre></td></tr></table></figure></p>
-<p>这样就可以在不同的线程中访问同一个ThreadLocal对象，但是它们获取到的值却可以不一样，互相独立，因为每个线程创建它的Looper的时候都会用同一个ThreadLocal对象把Looper存储到自己的ThreadLocal.Values中去，这样每次获取的时候无论是在哪个线程都会通过同一个ThreadLocal对象到自己的ThreadLocal.Values里去获取。</p>
-<p>有了前面的储备工作，主线程有了Looper，因此接下来可以在主线程中创建handler<br>创建handler的时候会调用下面这句来获取Looper<br>mLooper = Looper.myLooper();通过这句话获取当前线程Looper<br>其调用Looper的方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static @Nullable Looper myLooper() &#123;</span><br><span class="line">    <span class="keyword">return</span> sThreadLocal.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>调用ThreadLocal中get方法<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public T get() &#123;</span><br><span class="line">    // Optimized <span class="keyword">for</span> the fast path.</span><br><span class="line">    Thread currentThread = Thread.currentThread();</span><br><span class="line">    Values values = values(currentThread);</span><br><span class="line">    <span class="keyword">if</span> (values != null) &#123;</span><br><span class="line">        Object[] table = values.table;</span><br><span class="line">        int index = hash &amp; values.mask;</span><br><span class="line">        <span class="keyword">if</span> (this.reference == table[index]) &#123;</span><br><span class="line">            <span class="keyword">return</span> (T) table[index + <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        values = initializeValues(currentThread);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (T) values.getAfterMiss(this);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>刚刚创建Looper的时候已经通过sThreadLocal的set方法把Looper存储到对应线程的Values里了，看来为的就是此刻</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public Handler(Callback callback, boolean <span class="keyword">async</span>) &#123;</span><br><span class="line">    mLooper = Looper.myLooper();</span><br><span class="line">    <span class="keyword">if</span> (mLooper == null) &#123;</span><br><span class="line">        throw new RuntimeException(</span><br><span class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mQueue = mLooper.mQueue;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">    mAsynchronous = <span class="keyword">async</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>可以知道此时的Handler拿到了当前线程的Looper和MessageQueue并初始化成员变量<br>此时如果在子线程中发消息：</p>
-<pre><code>handler.sendMessage(message);
-</code></pre><p>在Handler中最终会调用这个方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMillis) &#123;</span><br><span class="line">    msg.target = this;</span><br><span class="line">    <span class="keyword">if</span> (mAsynchronous) &#123;</span><br><span class="line">        msg.setAsynchronous(true);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这里的MessageQueue就是创建Handler的所在线程的Looper的MessageQueue，调用它的<br>enqueueMessage方法，其实就是往消息队列里插入一条消息，主要通过无限循环的next方法来从消息队列中获取新消息，当有新消息到来时，next方法会返回这条消息并从单链表移除<br>Looper的loop方法：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">for (;;) &#123;</span><br><span class="line">    Message msg = queue.next(); // might block</span><br><span class="line">    if (msg == null) &#123;</span><br><span class="line">        // No message indicates that the message queue is quitting.</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // This must be in a local variable, in case a UI event sets the logger</span><br><span class="line">    Printer logging = me.mLogging;</span><br><span class="line">    if (logging != null) &#123;</span><br><span class="line">        logging.println("&gt;&gt;&gt;&gt;&gt; Dispatching to " + msg.target + " " +</span><br><span class="line">                msg.callback + ": " + msg.what);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    msg.target.dispatchMessage(msg);</span><br><span class="line"></span><br><span class="line">    if (logging != null) &#123;</span><br><span class="line">        logging.println("&lt;&lt;&lt;&lt;&lt; Finished to " + msg.target + " " + msg.callback);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Make sure that during the course of dispatching the</span><br><span class="line">    // identity of the thread wasn't corrupted.</span><br><span class="line">    final long newIdent = Binder.clearCallingIdentity();</span><br><span class="line">    if (ident != newIdent) &#123;</span><br><span class="line">        Log.wtf(TAG, "Thread identity changed from 0x"</span><br><span class="line">                + Long.toHexString(ident) + " to 0x"</span><br><span class="line">                + Long.toHexString(newIdent) + " while dispatching to "</span><br><span class="line">                + msg.target.getClass().getName() + " "</span><br><span class="line">                + msg.callback + " what=" + msg.what);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    msg.recycleUnchecked();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>可以发现，loop也是一个死循环，loop方法会调用MessageQueue的next方法来获取新消息，如果next返回了新消息，Looper就会处理这条消息：<br>msg.target.dispatchMessage(msg);<br>这里的msg.target是发送这条消息的Handler对象，这样Handler发送的消息最终又交给它的dispatchMessage来处理了，<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void dispatchMessage(Message msg) &#123;</span><br><span class="line">    <span class="keyword">if</span> (msg.callback != null) &#123;</span><br><span class="line">        handleCallback(msg);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mCallback != null) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        handleMessage(msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>到这里就很眼熟了，mCallback就是在主线程中创建Handler时传入的Callback，这样就成功将代码逻辑从子线程切换到主线程执行了</p>
-<p><em>以上仅仅是自己学习过程中总结的笔记</em></p>
+            <p>公司，个人各有一台电脑，一般是下班回家发布博客，可有时候工作时候想临时修改点东西，或者灵感来了，这时候如果公司电脑和家里电脑能协同发布就好了。</p>
+<p>这里前提是个人电脑的博客环境已搭好，搭建方法：<a href="http://simonenfp.github.io/2016/05/09/Hexo-Github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">请看我这一篇博客</a><br>    但是现在想要另一台电脑也可以协同发布，这就需要将此电脑博客源文件推送到github上保存，可以发现根目录有个为我们写好的.gitignore文件，里面忽略了不需要上传的文件<br>    在博客根目录打开命令行，会发现现在的分支是在master上，先切出个分支，名字随意</p>
+<pre><code>git branch hexo
+</code></pre><p>然后切换到此分支：</p>
+<pre><code>git checkout hexo
+</code></pre><p>此时应在hexo分支上,将次分支推送到远程分支hexo上</p>
+<pre><code>git push origin -u hexo
+</code></pre><p>稍等推送完成。这时候去github会发现远程多了个hexo分支，里面是源文件，此时在github项目setting中把github默认分支改为hexo分支，因为后续所有的提交源码，发布博客等操作都只是在这个分支上进行。<br>这样以后发布的时候需要先同步远程分支hexo到本地(更新最新博客内容)<br>然后发布完新的博客后，记得提交源文件到远程分支。<br>前面部署好以后，在另一台电脑就可以直接clone远程hexo分支到本地，</p>
+<pre><code>git clone 项目地址
+</code></pre><p>clone成功后，会发现本地已有博客源文件了，在根目录打开命令行，会发现在分支默认hexo上，如果这台电脑环境也都已配置完成，依次执行下列指令：</p>
+<pre><code>npm install hexo
+npm install
+npm install hexo-deployer-git
+</code></pre><p>这样就可以发布博客了，发布完成后记得提原始文件，以便另一台电脑协同发布博客，就像项目开发多人协作一样。</p>
 
           
         
@@ -384,7 +378,7 @@
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -425,7 +419,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-count">4</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
