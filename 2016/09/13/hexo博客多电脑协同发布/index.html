@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="SimonEnfp's blog">
 <meta property="og:description" content="公司，个人各有一台电脑，我在个人电脑搭建的hexo静态博客，有时候工作时候想临时修改点东西，或者灵感来了，这时候如果公司电脑和家里电脑能协同发布就好了，又或者电脑坏了，电脑重装系统了，我自己辛苦写的博客不能就这么没了。
 前提是个人电脑的博客环境已搭好，搭建方法：请看我这一篇博客    但是现在想要另一台电脑也可以协同发布，这就需要将此电脑博客源文件推送到github上保存，可以发现根目录有个为我们">
-<meta property="og:updated_time" content="2016-09-13T05:23:07.752Z">
+<meta property="og:updated_time" content="2016-09-13T05:27:59.701Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo博客多电脑协同发布">
 <meta name="twitter:description" content="公司，个人各有一台电脑，我在个人电脑搭建的hexo静态博客，有时候工作时候想临时修改点东西，或者灵感来了，这时候如果公司电脑和家里电脑能协同发布就好了，又或者电脑坏了，电脑重装系统了，我自己辛苦写的博客不能就这么没了。
@@ -334,9 +334,9 @@
 <pre><code>git branch hexo
 </code></pre><p>然后切换到此分支：</p>
 <pre><code>git checkout hexo
-</code></pre><p>此时应在hexo分支上,将次分支推送到远程分支hexo上</p>
+</code></pre><p>此时应在hexo分支上,将此分支推送到远程分支hexo上</p>
 <pre><code>git push origin -u hexo
-</code></pre><p>稍等推送完成。这时候去github会发现远程多了个hexo分支，里面是源文件，此时在github项目setting中把github默认分支改为hexo分支，因为后续所有的提交源码，发布博客等操作都只是在这个分支上进行。<br>这样以后发布的时候需要先同步远程分支hexo到本地(更新最新博客内容)<br>然后发布完新的博客后，记得提交源文件到远程分支。<br>前面部署好以后，在另一台电脑就可以直接clone远程hexo分支到本地，</p>
+</code></pre><p>稍等推送完成。这时候去github会发现远程多了个hexo分支，里面是源文件，此时在github项目setting中把项目的默认分支改为hexo分支(即刚刚推送上来的分支)，因为后续所有的提交源文件，发布博客等操作都只是在这个分支上进行。<br>这样以后发布的时候需要先同步远程分支hexo到本地(更新最新博客内容)<br>然后发布完新的博客后，记得提交源文件到远程分支。<br>前面部署好以后，在另一台电脑就可以直接clone远程hexo分支到本地，</p>
 <pre><code>git clone 项目地址
 </code></pre><p>clone成功后，会发现本地已有博客源文件了，在根目录打开命令行，会发现在分支默认hexo上，如果这台电脑环境也都已配置完成，依次执行下列指令：</p>
 <pre><code>npm install hexo
