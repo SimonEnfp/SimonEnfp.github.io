@@ -4,18 +4,18 @@ date: 2016-09-18 18:13:14
 tags:
 categories: 技术分享
 ---
-发现有很多项目在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，并且有个环形进度，对难以忍受广告的用户来说，这比显示广告页的时候只能傻傻的在那等广告,体验就好多了，于是自己写了个view，无图无真相，先来一发效果图：
+很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：
 ![此处输入图片的描述][1]
 
 这个view是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View。
-主要分为5个部分：
+主要分为4个部分：
 > * 自定义View属性
 > * 重写OnMeasure
 > * 重写OnDraw
 > * 更新进度
 #### 1. 自定义View所需属性
  在res/values/attr.xml中
-```python
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
@@ -38,7 +38,7 @@ categories: 技术分享
 </resources>
 ```
 定义属性变量，构造方法中获取属性
-```python
+```java
 
 /*
     * 中心文字
@@ -71,7 +71,7 @@ categories: 技术分享
      public CustomCircleProgress(Context context, AttributeSet attributeSet, int defStyleAttr){
         super(context,attributeSet,defStyleAttr);
         //        获得定义的自定义样式属性
-        TypedArray a = context.obtainStyledAttributes(attributeSet,                 R.styleable.CustomCircleProgress,defStyleAttr,0);
+        TypedArray a = context.obtainStyledAttributes(attributeSet,R.styleable.CustomCircleProgress,defStyleAttr,0);
 
         mCenterText = a.getString(R.styleable.CustomCircleProgress_centerText);
         mCenterTextColor =     a.getColor(R.styleable.CustomCircleProgress_centerTextColor,Color.WHITE);
@@ -93,7 +93,7 @@ categories: 技术分享
 
 #### 2. 重写OnMeasure
 由于继承自View，所以为了使wrap_content属性有效，必须重写OnMeasure。
-```python
+```java
  @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -119,7 +119,7 @@ categories: 技术分享
 ```
 
 #### 3. 重写OnDraw
-```python
+```java
 @Override
     protected void onDraw(Canvas canvas) {
 
@@ -159,7 +159,7 @@ categories: 技术分享
 
 #### 4. 更新进度
 先定义一些更新进度需要的变量
-```python
+```java
   /*
    * 圆环起始弧度,默认360
    * */
@@ -206,7 +206,7 @@ categories: 技术分享
     private int mPercent = 100;
 ```
 这里有三个变量可以在使用view的自己设定mDuration（设置进度总时间）、mIncreasing(设置进度递增或递减)、mShowPercent（是否显示进度百分比）、
-```python
+```java
  /*
     * 进度开始
     * */
@@ -253,8 +253,8 @@ categories: 技术分享
     }
 
 ```
-由于是在一定的时间内更新完成进度(进度0~1)，所以可以在更新进度的时候先通过 当前系统时间 - 开始更新进度时间 计算已经过去的时间timePass，这样就根据时间的流逝计算占总进度的比例，每次更新进度时调用computeProgressOffset()，判断是否完成进度，如果未完成(即时间未到)，设置已完成进度，返回true，调用postInvalidate()更新View；更新完后又会调用updateProgress()，如此循环；一旦timePass超过或等于设定时间，就完成了，设置进度为1，此时仍需要更新一次，所以computeProgressOffset()仍然返回true，但更新标识mStart应为false了，以此终止更新。
-这样简单的圆形进度基本功能就实现了，项目中够用了。
+由于是在一定的时间内更新完成进度(进度0~1)，所以可以在更新进度的时候先通过 **当前系统时间 - 开始更新进度时间** 计算已经过去的时间timePass，这样就根据时间的流逝计算占总进度的比例，每次更新进度时调用computeProgressOffset()，判断是否完成进度，如果未完成(即时间未到)，设置已完成进度，返回true，调用postInvalidate()更新View；更新完后又会调用updateProgress()，如此循环；一旦timePass超过或等于设定时间，就完成了，设置进度为1，此时仍需要更新一次，所以computeProgressOffset()仍然返回true，但更新标识mStart应为false了，以此终止更新。
+这样简单的圆形进度基本功能就实现了。
     
 
 
