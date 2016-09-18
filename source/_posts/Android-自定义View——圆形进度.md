@@ -1,4 +1,4 @@
----
+﻿---
 title: Android 自定义View——圆形进度
 date: 2016-09-18 18:13:14
 tags:
@@ -13,6 +13,7 @@ categories: 技术分享
 > * 重写OnMeasure
 > * 重写OnDraw
 > * 更新进度
+
 #### 1. 自定义View所需属性
  在res/values/attr.xml中
 ```xml
