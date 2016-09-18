@@ -253,8 +253,8 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/27/Android透明状态栏设置/" itemprop="url">
-                  Android透明状态栏设置
+                <a class="post-title-link" href="/2016/09/01/Android-Handler工作原理及源码学习/" itemprop="url">
+                  Android Handler工作原理及源码学习
                 </a>
               
             
@@ -267,8 +267,8 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-27T11:23:10+08:00" content="2016-06-27">
-              2016-06-27
+            <time itemprop="dateCreated" datetime="2016-09-01T16:15:28+08:00" content="2016-09-01">
+              2016-09-01
             </time>
           </span>
 
@@ -281,8 +281,8 @@
               <span class="post-meta-item-text">分类于</span>
               
                 <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
-                  <a href="/categories/技术分享/" itemprop="url" rel="index">
-                    <span itemprop="name">技术分享</span>
+                  <a href="/categories/学习笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">学习笔记</span>
                   </a>
                 </span>
 
@@ -297,8 +297,8 @@
             
               <span class="post-comments-count">
                 &nbsp; | &nbsp;
-                <a href="/2016/06/27/Android透明状态栏设置/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/27/Android透明状态栏设置/" itemprop="commentsCount"></span>
+                <a href="/2016/09/01/Android-Handler工作原理及源码学习/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/01/Android-Handler工作原理及源码学习/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -308,7 +308,7 @@
 
           
           
-             <span id="/2016/06/27/Android透明状态栏设置/" class="leancloud_visitors" data-flag-title="Android透明状态栏设置">
+             <span id="/2016/09/01/Android-Handler工作原理及源码学习/" class="leancloud_visitors" data-flag-title="Android Handler工作原理及源码学习">
                &nbsp; | &nbsp;
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -332,50 +332,26 @@
       
         
           
-            <p>应公司需求，为了让app界面在4.4版本之后的客户端更加美观和谐，欲使手机顶部状态栏(statusBar)与app主题色保持一致，所以想让statusBar保持透明，显示UI主题背景。</p>
-<ul>
-<li><p>适用于Android KITKAT(API 19) 之后</p>
-</li>
-<li><p>使用主题<code>Theme.Design.NoActionBar</code>，这里是自定义的Actionbar。</p>
-</li>
-</ul>
-<p><em>先上代码</em></p>
-<hr>
-<pre><code>    if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.KITKAT 
-        &amp;&amp; Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.LOLLIPOP){
-        Window window = activity.getWindow();
-
-//      set transparent status and let main layout extend to status
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-//      set transparent navigation and let main layout extend to navigation
-//      window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-
-        ViewGroup mContentView = (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
-//      set contentView rootView padding in order to set aside the location of the power strip
-        View rootView = mContentView.getChildAt(0);
-        if (rootView != null){
-//          rootView.setFitsSystemWindows(true);
-            rootView.setPadding(0,getStatusBarHeight(activity),0,0);
-        }
-    }
-</code></pre><hr>
-<h4 id="1-在API-19-API-21之间："><a href="#1-在API-19-API-21之间：" class="headerlink" title="1. 在API 19 ~ API 21之间："></a>1. 在API 19 ~ API 21之间：</h4><p>window增加这个Flag，<a href="https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_TRANSLUCENT_STATUS" target="_blank" rel="external">FLAG_TRANSLUCENT_STATUS</a>，作用是使系统状态栏背景透明，这时候会发现我们的ContentView布局延伸到了手机顶部被状态栏覆盖，如图:<br><img src="http://o6w24t5lg.bkt.clouddn.com/statusBar1.png?%09%20watermark/2/text/U2ltb25FbmZwJ3MgYmxvZw==/font/5a6L5L2T/fontsize/500/fill/IzBFQUZFMg==/dissolve/99/gravity/NorthEast/dx/10/dy/10" alt="此处输入图片的描述"><br>这样显然是不行的，我们自己的UI被挡住，所以需要下面的代码:</p>
-<pre><code>//rootView.setFitsSystemWindows(true);
-rootView.setPadding(0,getStatusBarHeight(activity),0,0);
-</code></pre><p>这里有两种方法:第一种是根布局设置<a href="https://developer.android.com/reference/android/view/View.html#attr_android:fitsSystemWindows" target="_blank" rel="external">FitsSystemWindows</a>为ture，Android官方文档是这样解释的：</p>
-<p><strong><em>Boolean internal attribute to adjust view layout based on system windows such as the status bar. If true, adjusts the padding of this view to leave space for the system windows.</em></strong><br>我的理解是如果设置为true，那就调整这个布局的padding，为系统窗口留出空间，这里指的就是顶部的statusBar和底部的Navigationbar，但是我的需求是仅仅让顶部预留空间即可，底部保持系统样式，所以，根据这个属性的原理，可以有另一种设置方法：</p>
-<pre><code>`rootView.setPadding(0,getStatusBarHeight(activity),0,0);`
-</code></pre><p>这里直接为自己的根布局设置一个与statusBar相同高度的padding即可。<br>完成之后，效果如下：<br><img src="http://o6w24t5lg.bkt.clouddn.com/statusBar2.png" alt="此处输入图片的描述"></p>
-<h4 id="2-在API-21-以上："><a href="#2-在API-21-以上：" class="headerlink" title="2. 在API 21 以上："></a>2. 在API 21 以上：</h4><blockquote>
-<pre><code>window.getDecorView().setSystemUiVisibility(
-            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-          | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-  window.setStatusBarColor(Color.TRANSPARENT);
-</code></pre></blockquote>
-<p>这里第一步是通过DecorView设置其属性SystemUiVisibility，SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN来使自己的根布局充满全屏，第二部是通过window在API 21之后新增属性StatusBarColor，设置statusbar透明，后面再使根布局为系统窗口留出Padding与API 19方法同理，无需多说</p>
-<hr>
-<p><strong>具体源码在这里查看：</strong><br><a href="https://github.com/simonenfp/007-A" target="_blank" rel="external"><strong>https://github.com/simonenfp/007-A</strong></a></p>
+            <p>一般使用方法是先在主线程创建一个Handler，等待接收消息</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    Handler handler = new Handler(new Handler.Callback()     &#123;</span><br><span class="line"><span class="meta">    @Override</span></span><br><span class="line">    public boolean handleMessage(Message msg) &#123;</span><br><span class="line">        <span class="keyword">return</span> true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>通过Handler构造方法可以知道在某个线程new Handler之前必须要为此线程创一个Looper否则会报错<br>从Handler构造函数部分代码可以看出：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public Handler(Callback callback, boolean <span class="keyword">async</span>) &#123;    </span><br><span class="line">    mLooper = Looper.myLooper();</span><br><span class="line">    <span class="keyword">if</span> (mLooper == null) &#123;</span><br><span class="line">        throw new RuntimeException(</span><br><span class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mQueue = mLooper.mQueue;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">    mAsynchronous = <span class="keyword">async</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于主线程已经创建一个Looper因此可以直接创建Handler，在ActvityThread的main方法中，<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static void prepareMainLooper() &#123;</span><br><span class="line">    prepare(false);</span><br><span class="line">    synchronized (Looper.<span class="keyword">class</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (sMainLooper != null) &#123;</span><br><span class="line">            throw new IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        sMainLooper = myLooper();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>prepare会new一个Looper并通过sThreadLocal把此Looper保存到当前线程中去，如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private static void prepare(boolean quitAllowed) &#123;</span><br><span class="line">    <span class="keyword">if</span> (sThreadLocal.get() != null) &#123;</span><br><span class="line">        throw new RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    sThreadLocal.set(new Looper(quitAllowed));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>看到new Looper方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private Looper(boolean quitAllowed) &#123;</span><br><span class="line">    mQueue = new MessageQueue(quitAllowed);</span><br><span class="line">    mThread = Thread.currentThread();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里也为Looper初始化了一个MessageQueue<br>sThreadLocal.set方法将此Looper保存到主线程的ThreadLocal.Values中去，以便查找指定线程的Looper<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public void set(T value) &#123;</span><br><span class="line">    Thread currentThread = Thread.currentThread();</span><br><span class="line">    Values values = values(currentThread);</span><br><span class="line">    <span class="keyword">if</span> (values == null) &#123;</span><br><span class="line">        values = initializeValues(currentThread);</span><br><span class="line">    &#125;</span><br><span class="line">    values.put(this, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>ThreadLocal是一个线程内部的数据存储类，就是在指定的线程存储和读取数据，以线程为区分，每个线程互不干涉<br>在Looper中的ThreadLocal是静态final的<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">static final ThreadLocal&lt;Looper&gt; sThreadLocal = new ThreadLocal&lt;Looper&gt;();</span><br></pre></td></tr></table></figure></p>
+<p>这样就可以在不同的线程中访问同一个ThreadLocal对象，但是它们获取到的值却可以不一样，互相独立，因为每个线程创建它的Looper的时候都会用同一个ThreadLocal对象把Looper存储到自己的ThreadLocal.Values中去，这样每次获取的时候无论是在哪个线程都会通过同一个ThreadLocal对象到自己的ThreadLocal.Values里去获取。</p>
+<p>有了前面的储备工作，主线程有了Looper，因此接下来可以在主线程中创建handler<br>创建handler的时候会调用下面这句来获取Looper<br>mLooper = Looper.myLooper();通过这句话获取当前线程Looper<br>其调用Looper的方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static @Nullable Looper myLooper() &#123;</span><br><span class="line">    <span class="keyword">return</span> sThreadLocal.get();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用ThreadLocal中get方法<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public T get() &#123;</span><br><span class="line">    // Optimized <span class="keyword">for</span> the fast path.</span><br><span class="line">    Thread currentThread = Thread.currentThread();</span><br><span class="line">    Values values = values(currentThread);</span><br><span class="line">    <span class="keyword">if</span> (values != null) &#123;</span><br><span class="line">        Object[] table = values.table;</span><br><span class="line">        int index = hash &amp; values.mask;</span><br><span class="line">        <span class="keyword">if</span> (this.reference == table[index]) &#123;</span><br><span class="line">            <span class="keyword">return</span> (T) table[index + <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        values = initializeValues(currentThread);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (T) values.getAfterMiss(this);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>刚刚创建Looper的时候已经通过sThreadLocal的set方法把Looper存储到对应线程的Values里了，看来为的就是此刻</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public Handler(Callback callback, boolean <span class="keyword">async</span>) &#123;</span><br><span class="line">    mLooper = Looper.myLooper();</span><br><span class="line">    <span class="keyword">if</span> (mLooper == null) &#123;</span><br><span class="line">        throw new RuntimeException(</span><br><span class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mQueue = mLooper.mQueue;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">    mAsynchronous = <span class="keyword">async</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以知道此时的Handler拿到了当前线程的Looper和MessageQueue并初始化成员变量<br>此时如果在子线程中发消息：</p>
+<pre><code>handler.sendMessage(message);
+</code></pre><p>在Handler中最终会调用这个方法：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private boolean enqueueMessage(MessageQueue queue, Message msg, long uptimeMillis) &#123;</span><br><span class="line">    msg.target = this;</span><br><span class="line">    <span class="keyword">if</span> (mAsynchronous) &#123;</span><br><span class="line">        msg.setAsynchronous(true);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> queue.enqueueMessage(msg, uptimeMillis);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里的MessageQueue就是创建Handler的所在线程的Looper的MessageQueue，调用它的<br>enqueueMessage方法，其实就是往消息队列里插入一条消息，主要通过无限循环的next方法来从消息队列中获取新消息，当有新消息到来时，next方法会返回这条消息并从单链表移除<br>Looper的loop方法：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">for (;;) &#123;</span><br><span class="line">    Message msg = queue.next(); // might block</span><br><span class="line">    if (msg == null) &#123;</span><br><span class="line">        // No message indicates that the message queue is quitting.</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // This must be in a local variable, in case a UI event sets the logger</span><br><span class="line">    Printer logging = me.mLogging;</span><br><span class="line">    if (logging != null) &#123;</span><br><span class="line">        logging.println("&gt;&gt;&gt;&gt;&gt; Dispatching to " + msg.target + " " +</span><br><span class="line">                msg.callback + ": " + msg.what);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    msg.target.dispatchMessage(msg);</span><br><span class="line"></span><br><span class="line">    if (logging != null) &#123;</span><br><span class="line">        logging.println("&lt;&lt;&lt;&lt;&lt; Finished to " + msg.target + " " + msg.callback);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    // Make sure that during the course of dispatching the</span><br><span class="line">    // identity of the thread wasn't corrupted.</span><br><span class="line">    final long newIdent = Binder.clearCallingIdentity();</span><br><span class="line">    if (ident != newIdent) &#123;</span><br><span class="line">        Log.wtf(TAG, "Thread identity changed from 0x"</span><br><span class="line">                + Long.toHexString(ident) + " to 0x"</span><br><span class="line">                + Long.toHexString(newIdent) + " while dispatching to "</span><br><span class="line">                + msg.target.getClass().getName() + " "</span><br><span class="line">                + msg.callback + " what=" + msg.what);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    msg.recycleUnchecked();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>可以发现，loop也是一个死循环，loop方法会调用MessageQueue的next方法来获取新消息，如果next返回了新消息，Looper就会处理这条消息：<br>msg.target.dispatchMessage(msg);<br>这里的msg.target是发送这条消息的Handler对象，这样Handler发送的消息最终又交给它的dispatchMessage来处理了，<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public void dispatchMessage(Message msg) &#123;</span><br><span class="line">    <span class="keyword">if</span> (msg.callback != null) &#123;</span><br><span class="line">        handleCallback(msg);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (mCallback != null) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mCallback.handleMessage(msg)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        handleMessage(msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>到这里就很眼熟了，mCallback就是在主线程中创建Handler时传入的Callback，这样就成功将代码逻辑从子线程切换到主线程执行了</p>
+<p><em>以上仅仅是自己学习过程中总结的笔记</em></p>
 
           
         
@@ -408,7 +384,7 @@ rootView.setPadding(0,getStatusBarHeight(activity),0,0);
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -449,7 +425,7 @@ rootView.setPadding(0,getStatusBarHeight(activity),0,0);
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

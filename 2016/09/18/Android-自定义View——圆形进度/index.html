@@ -84,15 +84,39 @@
 
 
 
-<meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="SimonEnfp's blog">
-<meta property="og:url" content="http://simonenfp.github.io/index.html">
+<meta name="description" content="发现有很多项目在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，并且有个环形进度，对难以忍受广告的用户来说，这比显示广告页的时候只能傻傻的在那等广告,体验就好多了，于是自己写了个view，无图无真相，先来一发效果图：
+这个view是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View。主要分为5个部分：
+
+
+自定义View属性
+重写OnMeasure
+重写OnDraw
+更">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 自定义View——圆形进度">
+<meta property="og:url" content="http://simonenfp.github.io/2016/09/18/Android-自定义View——圆形进度/index.html">
 <meta property="og:site_name" content="SimonEnfp's blog">
-<meta property="og:description">
+<meta property="og:description" content="发现有很多项目在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，并且有个环形进度，对难以忍受广告的用户来说，这比显示广告页的时候只能傻傻的在那等广告,体验就好多了，于是自己写了个view，无图无真相，先来一发效果图：
+这个view是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View。主要分为5个部分：
+
+
+自定义View属性
+重写OnMeasure
+重写OnDraw
+更">
+<meta property="og:image" content="http://o6w24t5lg.bkt.clouddn.com/aa.gif">
+<meta property="og:updated_time" content="2016-09-18T10:18:44.127Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SimonEnfp's blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="Android 自定义View——圆形进度">
+<meta name="twitter:description" content="发现有很多项目在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，并且有个环形进度，对难以忍受广告的用户来说，这比显示广告页的时候只能傻傻的在那等广告,体验就好多了，于是自己写了个view，无图无真相，先来一发效果图：
+这个view是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View。主要分为5个部分：
+
+
+自定义View属性
+重写OnMeasure
+重写OnDraw
+更">
+<meta name="twitter:image" content="http://o6w24t5lg.bkt.clouddn.com/aa.gif">
 
 
 
@@ -110,7 +134,7 @@
   };
 </script>
 
-  <title> SimonEnfp's blog </title>
+  <title> Android 自定义View——圆形进度 | SimonEnfp's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -131,9 +155,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -230,9 +252,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -252,10 +274,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/09/18/Android-自定义View——圆形进度/" itemprop="url">
-                  Android 自定义View——圆形进度
-                </a>
+                Android 自定义View——圆形进度
               
             
           </h1>
@@ -330,9 +349,7 @@
       
 
       
-        
-          
-            <p>发现有很多项目在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，并且有个环形进度，对难以忍受广告的用户来说，这比显示广告页的时候只能傻傻的在那等广告,体验就好多了，于是自己写了个view，无图无真相，先来一发效果图：<br><img src="http://o6w24t5lg.bkt.clouddn.com/aa.gif" alt="此处输入图片的描述"></p>
+        <p>发现有很多项目在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，并且有个环形进度，对难以忍受广告的用户来说，这比显示广告页的时候只能傻傻的在那等广告,体验就好多了，于是自己写了个view，无图无真相，先来一发效果图：<br><img src="http://o6w24t5lg.bkt.clouddn.com/aa.gif" alt="此处输入图片的描述"></p>
 <p>这个view是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View。<br>主要分为5个部分：</p>
 <blockquote>
 <ul>
@@ -350,16 +367,19 @@
 <p>这里有三个变量可以在使用view的自己设定mDuration（设置进度总时间）、mIncreasing(设置进度递增或递减)、mShowPercent（是否显示进度百分比）、<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line">   * 进度开始</span><br><span class="line">   * */</span><br><span class="line">   public void startRun()&#123;</span><br><span class="line">       mStartTime =  AnimationUtils.currentAnimationTimeMillis();</span><br><span class="line">       mStart = true;</span><br><span class="line">       mDurationReciprocal = <span class="number">1.0</span>f / (float) mDuration;</span><br><span class="line">       updateProgress();</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">    /*</span><br><span class="line">   * 更新进度</span><br><span class="line">   * */</span><br><span class="line">   private void updateProgress()&#123;</span><br><span class="line">       <span class="keyword">if</span> (computeProgressOffset())&#123;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (mIncreasing)&#123;</span><br><span class="line">               mArc = Math.round(<span class="number">360</span> * mCurrProgress);</span><br><span class="line">               mPercent = Math.round(<span class="number">100</span> * mCurrProgress);</span><br><span class="line">           &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">               mArc = Math.round(<span class="number">360</span> * (<span class="number">1</span>-mCurrProgress));</span><br><span class="line">               mPercent = Math.round(<span class="number">100</span> * (<span class="number">1</span>-mCurrProgress));</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           postInvalidate();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   /*</span><br><span class="line">   * 根据时间流逝计算进度比例</span><br><span class="line">   * */</span><br><span class="line">   private boolean computeProgressOffset()&#123;</span><br><span class="line">       <span class="keyword">if</span> (!mStart)&#123;</span><br><span class="line">           <span class="keyword">return</span> false;</span><br><span class="line">       &#125;</span><br><span class="line">       int timePass = (int) (AnimationUtils.currentAnimationTimeMillis() - mStartTime);</span><br><span class="line">       <span class="keyword">if</span> (timePass &lt; mDuration)&#123;</span><br><span class="line">           mCurrProgress = timePass * mDurationReciprocal;</span><br><span class="line">       &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">           mStart = false;</span><br><span class="line">           mCurrProgress = <span class="number">1</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> true;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
 <p>由于是在一定的时间内更新完成进度(进度0~1)，所以可以在更新进度的时候先通过 当前系统时间 - 开始更新进度时间 计算已经过去的时间timePass，这样就根据时间的流逝计算占总进度的比例，每次更新进度时调用computeProgressOffset()，判断是否完成进度，如果未完成(即时间未到)，设置已完成进度，返回true，调用postInvalidate()更新View；更新完后又会调用updateProgress()，如此循环；一旦timePass超过或等于设定时间，就完成了，设置进度为1，此时仍需要更新一次，所以computeProgressOffset()仍然返回true，但更新标识mStart应为false了，以此终止更新。<br>这样简单的圆形进度基本功能就实现了，项目中够用了。</p>
 
-          
+      
+    </div>
+
+    <div>
+      
         
       
     </div>
 
     <div>
       
-    </div>
+        
 
-    <div>
       
     </div>
 
@@ -367,23 +387,32 @@
       
 
       
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/09/13/hexo博客多电脑协同发布/" rel="next" title="hexo博客多电脑协同发布">
+                <i class="fa fa-chevron-left"></i> hexo博客多电脑协同发布
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
 
       
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -391,6 +420,14 @@
 
 
           
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/09/18/Android-自定义View——圆形进度/"
+           data-title="Android 自定义View——圆形进度" data-url="http://simonenfp.github.io/2016/09/18/Android-自定义View——圆形进度/">
+      </div>
+    
+  </div>
+
 
         </div>
         
@@ -410,8 +447,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/uploads/avatar.jpg"
@@ -474,6 +520,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-自定义View所需属性"><span class="nav-number">1.</span> <span class="nav-text">1. 自定义View所需属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-重写OnMeasure"><span class="nav-number">2.</span> <span class="nav-text">2. 重写OnMeasure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-重写OnDraw"><span class="nav-number">3.</span> <span class="nav-text">3. 重写OnDraw</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-更新进度"><span class="nav-number">4.</span> <span class="nav-text">4. 更新进度</span></a></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -570,6 +627,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
