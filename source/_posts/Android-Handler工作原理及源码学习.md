@@ -1,8 +1,8 @@
 ﻿---
 title: Android Handler工作原理及源码学习
 date: 2016-09-01 16:15:28
-tags:
-categories: 学习笔记
+tags: Handler、Looper
+categories: Android
 ---
 
 一般使用方法是先在主线程创建一个Handler，等待接收消息

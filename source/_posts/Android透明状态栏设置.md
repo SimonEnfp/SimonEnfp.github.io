@@ -1,8 +1,8 @@
 ---
 title: Android透明状态栏设置
 date: 2016-06-27 11:23:10
-tags:
-categories: 技术分享
+tags: 状态栏
+categories: Android
 ---
 应公司需求，为了让app界面在4.4版本之后的客户端更加美观和谐，欲使手机顶部状态栏(statusBar)与app主题色保持一致，所以想让statusBar保持透明，显示UI主题背景。
 
