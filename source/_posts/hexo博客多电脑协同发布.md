@@ -33,7 +33,7 @@ categories: Hexo
 前面部署好以后，在另一台电脑就可以直接clone远程hexo分支到本地，
         
         git clone 项目地址
-clone成功后，会发现本地已有博客源文件了，在根目录打开命令行，会发现在分支默认hexo上，如果这台电脑环境也都已配置完成，依次执行下列指令：
+clone成功后，会发现本地已有博客源文件了，在根目录打开`git bash`，会发现在分支默认hexo上，如果这台电脑环境也都已配置完成，依次执行下列指令：
 
         npm install hexo
         npm install
