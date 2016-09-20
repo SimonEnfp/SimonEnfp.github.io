@@ -7,6 +7,8 @@ categories: Android
 
 一般使用方法是先在主线程创建一个Handler，等待接收消息
 
+
+
 ```python
     Handler handler = new Handler(new Handler.Callback()     {
     @Override
@@ -15,7 +17,7 @@ categories: Android
     }
 });
 ```
-
+<!-- more -->
 通过Handler构造方法可以知道在某个线程new Handler之前必须要为此线程创一个Looper否则会报错
 从Handler构造函数部分代码可以看出：
 ```python

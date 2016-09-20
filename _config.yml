@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: SimonEnfp's blog
+title: SimonEnfp
 subtitle:
 description:
 author: SimonEnfp
@@ -70,7 +70,7 @@ per_page: 5
 pagination_dir: page
 
 index_generator:
-  per_page: 1
+  per_page: 10
 
 archive_generator:
   per_page: 20
