@@ -49,13 +49,25 @@
   
 
   
+    
+      
+    
 
+    
+  
+
+  
+    
+      
+    
+
+    
   
 
   
     
     
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -89,10 +101,10 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android Handler工作原理及源码学习">
 <meta property="og:url" content="http://simonenfp.github.io/2016/09/01/Android-Handler工作原理及源码学习/index.html">
-<meta property="og:site_name" content="SimonEnfp's blog">
+<meta property="og:site_name" content="SimonEnfp">
 <meta property="og:description" content="一般使用方法是先在主线程创建一个Handler，等待接收消息
 123456    Handler handler = new Handler(new Handler.Callback()     &amp;#123;    @Override    public boolean handleMessage(Message msg) &amp;#123;        return true;    &amp;#125;&amp;">
-<meta property="og:updated_time" content="2016-09-19T01:52:09.653Z">
+<meta property="og:updated_time" content="2016-09-20T06:53:45.261Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Handler工作原理及源码学习">
 <meta name="twitter:description" content="一般使用方法是先在主线程创建一个Handler，等待接收消息
@@ -104,7 +116,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
+    sidebar: {"position":"left","display":"always"},
     fancybox: true,
     motion: true,
     duoshuo: {
@@ -114,7 +126,7 @@
   };
 </script>
 
-  <title> Android Handler工作原理及源码学习 | SimonEnfp's blog </title>
+  <title> Android Handler工作原理及源码学习 | SimonEnfp </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -145,7 +157,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">SimonEnfp's blog</span>
+      <span class="site-title">SimonEnfp</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -331,6 +343,7 @@
       
         <p>一般使用方法是先在主线程创建一个Handler，等待接收消息</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    Handler handler = new Handler(new Handler.Callback()     &#123;</span><br><span class="line"><span class="meta">    @Override</span></span><br><span class="line">    public boolean handleMessage(Message msg) &#123;</span><br><span class="line">        <span class="keyword">return</span> true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>通过Handler构造方法可以知道在某个线程new Handler之前必须要为此线程创一个Looper否则会报错<br>从Handler构造函数部分代码可以看出：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public Handler(Callback callback, boolean <span class="keyword">async</span>) &#123;    </span><br><span class="line">    mLooper = Looper.myLooper();</span><br><span class="line">    <span class="keyword">if</span> (mLooper == null) &#123;</span><br><span class="line">        throw new RuntimeException(</span><br><span class="line">            <span class="string">"Can't create handler inside thread that has not called Looper.prepare()"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mQueue = mLooper.mQueue;</span><br><span class="line">    mCallback = callback;</span><br><span class="line">    mAsynchronous = <span class="keyword">async</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>由于主线程已经创建一个Looper因此可以直接创建Handler，在ActvityThread的main方法中，<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static void prepareMainLooper() &#123;</span><br><span class="line">    prepare(false);</span><br><span class="line">    synchronized (Looper.<span class="keyword">class</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (sMainLooper != null) &#123;</span><br><span class="line">            throw new IllegalStateException(<span class="string">"The main Looper has already been prepared."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        sMainLooper = myLooper();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>prepare会new一个Looper并通过sThreadLocal把此Looper保存到当前线程中去，如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private static void prepare(boolean quitAllowed) &#123;</span><br><span class="line">    <span class="keyword">if</span> (sThreadLocal.get() != null) &#123;</span><br><span class="line">        throw new RuntimeException(<span class="string">"Only one Looper may be created per thread"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    sThreadLocal.set(new Looper(quitAllowed));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
@@ -494,18 +507,21 @@
               <span class="links-of-author-item">
                 <a href="https://github.com/simonenfp" target="_blank" title="github">
                   
-                    <i class="fa fa-fw fa-globe"></i>
-                  
                   github
                 </a>
               </span>
             
               <span class="links-of-author-item">
-                <a href="http://www.zhihu.com/people/SimonQu" target="_blank" title="zhihu">
-                  
-                    <i class="fa fa-fw fa-globe"></i>
+                <a href="https://www.zhihu.com/people/simonenfp" target="_blank" title="zhihu">
                   
                   zhihu
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/5896461493/profile" target="_blank" title="weibo">
+                  
+                  weibo
                 </a>
               </span>
             
@@ -516,6 +532,28 @@
         
 
         
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              基友
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://bracemao.github.io/" title="bracemao" target="_blank">bracemao</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://rjpacket.github.io/" title="rjpacket" target="_blank">rjpacket</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://yothon.github.io/" title="yothon" target="_blank">yothon</a>
+                </li>
+              
+            </ul>
+          </div>
         
 
       </section>

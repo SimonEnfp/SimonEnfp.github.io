@@ -49,13 +49,25 @@
   
 
   
+    
+      
+    
 
+    
+  
+
+  
+    
+      
+    
+
+    
   
 
   
     
     
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -93,7 +105,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android 自定义View——圆形进度">
 <meta property="og:url" content="http://simonenfp.github.io/2016/09/18/Android-自定义View——圆形进度/index.html">
-<meta property="og:site_name" content="SimonEnfp's blog">
+<meta property="og:site_name" content="SimonEnfp">
 <meta property="og:description" content="很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：
 这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原理就是根据时间的流逝，计算进度，重绘View。主要分为4个部分：
 
@@ -118,7 +130,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
+    sidebar: {"position":"left","display":"always"},
     fancybox: true,
     motion: true,
     duoshuo: {
@@ -128,7 +140,7 @@
   };
 </script>
 
-  <title> Android 自定义View——圆形进度 | SimonEnfp's blog </title>
+  <title> Android 自定义View——圆形进度 | SimonEnfp </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -159,7 +171,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">SimonEnfp's blog</span>
+      <span class="site-title">SimonEnfp</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -501,18 +513,21 @@
               <span class="links-of-author-item">
                 <a href="https://github.com/simonenfp" target="_blank" title="github">
                   
-                    <i class="fa fa-fw fa-globe"></i>
-                  
                   github
                 </a>
               </span>
             
               <span class="links-of-author-item">
-                <a href="http://www.zhihu.com/people/SimonQu" target="_blank" title="zhihu">
-                  
-                    <i class="fa fa-fw fa-globe"></i>
+                <a href="https://www.zhihu.com/people/simonenfp" target="_blank" title="zhihu">
                   
                   zhihu
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/5896461493/profile" target="_blank" title="weibo">
+                  
+                  weibo
                 </a>
               </span>
             
@@ -523,6 +538,28 @@
         
 
         
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              基友
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://bracemao.github.io/" title="bracemao" target="_blank">bracemao</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://rjpacket.github.io/" title="rjpacket" target="_blank">rjpacket</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://yothon.github.io/" title="yothon" target="_blank">yothon</a>
+                </li>
+              
+            </ul>
+          </div>
         
 
       </section>

@@ -49,13 +49,25 @@
   
 
   
+    
+      
+    
 
+    
+  
+
+  
+    
+      
+    
+
+    
   
 
   
     
     
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -97,7 +109,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android透明状态栏设置">
 <meta property="og:url" content="http://simonenfp.github.io/2016/06/27/Android透明状态栏设置/index.html">
-<meta property="og:site_name" content="SimonEnfp's blog">
+<meta property="og:site_name" content="SimonEnfp">
 <meta property="og:description" content="应公司需求，为了让app界面在4.4版本之后的客户端更加美观和谐，欲使手机顶部状态栏(statusBar)与app主题色保持一致，所以想让statusBar保持透明，显示UI主题背景。
 
 适用于Android KITKAT(API 19) 之后
@@ -131,7 +143,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
+    sidebar: {"position":"left","display":"always"},
     fancybox: true,
     motion: true,
     duoshuo: {
@@ -141,7 +153,7 @@
   };
 </script>
 
-  <title> Android透明状态栏设置 | SimonEnfp's blog </title>
+  <title> Android透明状态栏设置 | SimonEnfp </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -172,7 +184,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">SimonEnfp's blog</span>
+      <span class="site-title">SimonEnfp</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -545,18 +557,21 @@ rootView.setPadding(0,getStatusBarHeight(activity),0,0);
               <span class="links-of-author-item">
                 <a href="https://github.com/simonenfp" target="_blank" title="github">
                   
-                    <i class="fa fa-fw fa-globe"></i>
-                  
                   github
                 </a>
               </span>
             
               <span class="links-of-author-item">
-                <a href="http://www.zhihu.com/people/SimonQu" target="_blank" title="zhihu">
-                  
-                    <i class="fa fa-fw fa-globe"></i>
+                <a href="https://www.zhihu.com/people/simonenfp" target="_blank" title="zhihu">
                   
                   zhihu
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/5896461493/profile" target="_blank" title="weibo">
+                  
+                  weibo
                 </a>
               </span>
             
@@ -567,6 +582,28 @@ rootView.setPadding(0,getStatusBarHeight(activity),0,0);
         
 
         
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              基友
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://bracemao.github.io/" title="bracemao" target="_blank">bracemao</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://rjpacket.github.io/" title="rjpacket" target="_blank">rjpacket</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://yothon.github.io/" title="yothon" target="_blank">yothon</a>
+                </li>
+              
+            </ul>
+          </div>
         
 
       </section>

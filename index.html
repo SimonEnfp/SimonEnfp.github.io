@@ -49,13 +49,25 @@
   
 
   
+    
+      
+    
 
+    
+  
+
+  
+    
+      
+    
+
+    
   
 
   
     
     
-    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
   
 
 
@@ -86,12 +98,12 @@
 
 <meta name="description">
 <meta property="og:type" content="website">
-<meta property="og:title" content="SimonEnfp's blog">
+<meta property="og:title" content="SimonEnfp">
 <meta property="og:url" content="http://simonenfp.github.io/index.html">
-<meta property="og:site_name" content="SimonEnfp's blog">
+<meta property="og:site_name" content="SimonEnfp">
 <meta property="og:description">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="SimonEnfp's blog">
+<meta name="twitter:title" content="SimonEnfp">
 <meta name="twitter:description">
 
 
@@ -100,7 +112,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     scheme: 'Mist',
-    sidebar: {"position":"left","display":"post"},
+    sidebar: {"position":"left","display":"always"},
     fancybox: true,
     motion: true,
     duoshuo: {
@@ -110,7 +122,7 @@
   };
 </script>
 
-  <title> SimonEnfp's blog </title>
+  <title> SimonEnfp </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -143,7 +155,7 @@
   <div class="custom-logo-site-title">
     <a href="/"  class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <span class="site-title">SimonEnfp's blog</span>
+      <span class="site-title">SimonEnfp</span>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -332,25 +344,554 @@
       
         
           
-            <p>很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：<br><img src="http://o6w24t5lg.bkt.clouddn.com/aa.gif" alt="此处输入图片的描述"></p>
-<p>这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原理就是根据时间的流逝，计算进度，重绘View。<br>主要分为4个部分：</p>
-<blockquote>
-<ul>
-<li>自定义View属性</li>
-<li>重写OnMeasure</li>
-<li>重写OnDraw</li>
-<li>更新进度</li>
-</ul>
-</blockquote>
-<h4 id="1-自定义View所需属性"><a href="#1-自定义View所需属性" class="headerlink" title="1. 自定义View所需属性"></a>1. 自定义View所需属性</h4><p> 在res/values/attr.xml中<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"CustomCircleProgress"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"centerText"</span> <span class="attr">format</span>=<span class="string">"string"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"centerTextColor"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"centerTextSize"</span> <span class="attr">format</span>=<span class="string">"dimension"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"circleBackground"</span> <span class="attr">format</span>=<span class="string">"color"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"ringProgressColor"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"ringProgressWidth"</span> <span class="attr">format</span>=<span class="string">"dimension"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"ringProgressBackground"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"CustomView2"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"contentText"</span> <span class="attr">format</span>=<span class="string">"string"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"contentTextColor"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"contentTextSize"</span> <span class="attr">format</span>=<span class="string">"dimension"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
-<p>定义属性变量，构造方法中获取属性<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span><br><span class="line">    * 中心文字</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> String mCenterText;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 中心文字颜色</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mCenterTextColor;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 中心文字大小</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mCenterTextSize;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆形背景</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mCircleBackground;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆环进度颜色</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mRingProgressColor;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆环进度背景颜色</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mRingProgressBackground;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆环进度宽度</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mRingProgressWidth;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="title">CustomCircleProgress</span><span class="params">(Context context, AttributeSet attributeSet, <span class="keyword">int</span> defStyleAttr)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context,attributeSet,defStyleAttr);</span><br><span class="line">        <span class="comment">//        获得定义的自定义样式属性</span></span><br><span class="line">        TypedArray a = context.obtainStyledAttributes(attributeSet,R.styleable.CustomCircleProgress,defStyleAttr,<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        mCenterText = a.getString(R.styleable.CustomCircleProgress_centerText);</span><br><span class="line">        mCenterTextColor =     a.getColor(R.styleable.CustomCircleProgress_centerTextColor,Color.WHITE);</span><br><span class="line">        mCenterTextSize = a.getDimensionPixelSize(R.styleable.CustomCircleProgress_centerTextSize,(<span class="keyword">int</span>) TypedValue.applyDimension(</span><br><span class="line">                TypedValue.COMPLEX_UNIT_SP, <span class="number">14</span>, getResources().getDisplayMetrics()));</span><br><span class="line">        mCircleBackground = a.getColor(R.styleable.CustomCircleProgress_circleBackground,Color.BLACK);</span><br><span class="line"></span><br><span class="line">        mRingProgressColor = a.getColor(R.styleable.CustomCircleProgress_ringProgressColor,Color.GRAY);</span><br><span class="line">        mRingProgressBackground = a.getColor(R.styleable.CustomCircleProgress_ringProgressBackground,Color.TRANSPARENT);</span><br><span class="line">        mRingProgressWidth = a.getDimensionPixelSize(R.styleable.CustomCircleProgress_ringProgressWidth,(<span class="keyword">int</span>) TypedValue.applyDimension(</span><br><span class="line">                TypedValue.COMPLEX_UNIT_DIP, <span class="number">4</span>, getResources().getDisplayMetrics()));</span><br><span class="line"></span><br><span class="line">        a.recycle();</span><br><span class="line">        initialize();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="2-重写OnMeasure"><a href="#2-重写OnMeasure" class="headerlink" title="2. 重写OnMeasure"></a>2. 重写OnMeasure</h4><p>由于继承自View，所以为了使wrap_content属性有效，必须重写OnMeasure。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">super</span>.onMeasure(widthMeasureSpec, heightMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);</span><br><span class="line"></span><br><span class="line">   <span class="comment">//如果宽或高的SpecMode为AT_MOST，就设置为默认宽高</span></span><br><span class="line">       <span class="keyword">if</span> (widthSpecMode == MeasureSpec.AT_MOST &amp;&amp; heightSpecMode == MeasureSpec.AT_MOST)&#123;</span><br><span class="line">           setMeasuredDimension(mDefaultRadius,mDefaultRadius);</span><br><span class="line">       &#125;<span class="keyword">else</span> <span class="keyword">if</span> (widthSpecMode == MeasureSpec.AT_MOST)&#123;</span><br><span class="line">           setMeasuredDimension(mDefaultRadius,heightSpecSize);</span><br><span class="line">       &#125;<span class="keyword">else</span> <span class="keyword">if</span> (heightSpecMode == MeasureSpec.AT_MOST)&#123;</span><br><span class="line">           setMeasuredDimension(widthSpecSize,mDefaultRadius);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">int</span> width = getMeasuredWidth();</span><br><span class="line">       <span class="keyword">int</span> height = getMeasuredHeight();</span><br><span class="line">       <span class="comment">//宽和高取较小的那一个，并设置自定义圆形View尺寸</span></span><br><span class="line">       <span class="keyword">int</span> mViewSize = ((height &lt; width ? height : width));</span><br><span class="line">       setMeasuredDimension(mViewSize,mViewSize);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
-<h4 id="3-重写OnDraw"><a href="#3-重写OnDraw" class="headerlink" title="3. 重写OnDraw"></a>3. 重写OnDraw</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//设置绘制区的矩形，为圆环外界留出圆环宽度一半的大小</span></span><br><span class="line">        mRectFBound.set(mRingProgressWidth/<span class="number">2</span>,mRingProgressWidth/<span class="number">2</span>,getWidth() - mRingProgressWidth/<span class="number">2</span>,getHeight() - mRingProgressWidth/<span class="number">2</span>);</span><br><span class="line">        mPaint.setAntiAlias(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//        画实心背景 半径为矩形区域减去圆环宽度的一半</span></span><br><span class="line">        mPaint.setColor(mCircleBackground);</span><br><span class="line">        mPaint.setStyle(Paint.Style.FILL);</span><br><span class="line">        canvas.drawCircle(mRectFBound.centerX(),mRectFBound.centerY(),mRectFBound.width()/<span class="number">2</span> - mRingProgressWidth/<span class="number">2</span>,mPaint);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//画中心文字 中心文字起点为左下，文字绘制在圆形中间位置</span></span><br><span class="line">        mPaint.setColor(mCenterTextColor);</span><br><span class="line">        mPaint.setStyle(Paint.Style.FILL);</span><br><span class="line">        <span class="keyword">if</span> (mShowPercent)&#123;</span><br><span class="line">            mCenterText = String.valueOf(mPercent) + <span class="string">"%"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mPaint.setTextSize(mCenterTextSize);</span><br><span class="line">        mPaint.getTextBounds(mCenterText,<span class="number">0</span>,mCenterText.length(),mTextRect);</span><br><span class="line">        canvas.drawText(mCenterText,mRectFBound.centerX() - mTextRect.width()/<span class="number">2</span>,mRectFBound.centerY() + mTextRect.height()/<span class="number">2</span>,mPaint);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//        画圆环   因为圆环有宽度，所以是环的中间位置与矩形四边相切</span></span><br><span class="line">        mPaint.setStrokeWidth(mRingProgressWidth);</span><br><span class="line">        mPaint.setStyle(Paint.Style.STROKE);</span><br><span class="line"></span><br><span class="line">        mPaint.setColor(mRingProgressBackground);</span><br><span class="line">        canvas.drawArc(mRectFBound,<span class="number">0</span>,<span class="number">360</span>,<span class="keyword">false</span>,mPaint);</span><br><span class="line"></span><br><span class="line">        mPaint.setColor(mRingProgressColor);</span><br><span class="line">        canvas.drawArc(mRectFBound,<span class="number">0</span>,mArc,<span class="keyword">false</span>,mPaint);</span><br><span class="line"></span><br><span class="line">        updateProgress();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<h4 id="4-更新进度"><a href="#4-更新进度" class="headerlink" title="4. 更新进度"></a>4. 更新进度</h4><p>先定义一些更新进度需要的变量<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> * 圆环起始弧度,默认360</span><br><span class="line"> * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> mArc = <span class="number">360</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 当前进度</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">float</span> mCurrProgress;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度开始时刻</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">long</span> mStartTime ;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度是否已开始</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> mStart = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span><br><span class="line">   * 默认进度完成总时间。</span><br><span class="line">   */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> mDuration = <span class="number">3000</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度完成时间倒数</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">float</span> mDurationReciprocal;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度是否渐增，默认是递减</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> mIncreasing = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 是否显示百分比进度，默认不显示</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> mShowPercent = <span class="keyword">false</span>;</span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 百分比进度，默认100%</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> mPercent = <span class="number">100</span>;</span><br></pre></td></tr></table></figure></p>
-<p>这里有三个变量可以在使用view的自己设定mDuration（设置进度总时间）、mIncreasing(设置进度递增或递减)、mShowPercent（是否显示进度百分比）、<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line">   * 进度开始</span><br><span class="line">   * */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startRun</span><span class="params">()</span></span>&#123;</span><br><span class="line">       mStartTime =  AnimationUtils.currentAnimationTimeMillis();</span><br><span class="line">       mStart = <span class="keyword">true</span>;</span><br><span class="line">       mDurationReciprocal = <span class="number">1.0f</span> / (<span class="keyword">float</span>) mDuration;</span><br><span class="line">       updateProgress();</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">    <span class="comment">/*</span><br><span class="line">   * 更新进度</span><br><span class="line">   * */</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateProgress</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (computeProgressOffset())&#123;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (mIncreasing)&#123;</span><br><span class="line">               mArc = Math.round(<span class="number">360</span> * mCurrProgress);</span><br><span class="line">               mPercent = Math.round(<span class="number">100</span> * mCurrProgress);</span><br><span class="line">           &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">               mArc = Math.round(<span class="number">360</span> * (<span class="number">1</span>-mCurrProgress));</span><br><span class="line">               mPercent = Math.round(<span class="number">100</span> * (<span class="number">1</span>-mCurrProgress));</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           postInvalidate();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/*</span><br><span class="line">   * 根据时间流逝计算进度比例</span><br><span class="line">   * */</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">computeProgressOffset</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (!mStart)&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">int</span> timePass = (<span class="keyword">int</span>) (AnimationUtils.currentAnimationTimeMillis() - mStartTime);</span><br><span class="line">       <span class="keyword">if</span> (timePass &lt; mDuration)&#123;</span><br><span class="line">           mCurrProgress = timePass * mDurationReciprocal;</span><br><span class="line">       &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">           mStart = <span class="keyword">false</span>;</span><br><span class="line">           mCurrProgress = <span class="number">1</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
-<p>由于是在一定的时间内更新完成进度(进度0~1)，所以可以在更新进度的时候先通过 <strong>当前系统时间 - 开始更新进度时间</strong> 计算已经过去的时间timePass，这样就根据时间的流逝计算占总进度的比例，每次更新进度时调用computeProgressOffset()，判断是否完成进度，如果未完成(即时间未到)，设置已完成进度，返回true，调用postInvalidate()更新View；更新完后又会调用updateProgress()，如此循环；一旦timePass超过或等于设定时间，就完成了，设置进度为1，此时仍需要更新一次，所以computeProgressOffset()仍然返回true，但更新标识mStart应为false了，以此终止更新。<br>这样简单的圆形进度基本功能就实现了。</p>
+          很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：
+这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/09/18/Android-自定义View——圆形进度/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/09/13/hexo博客多电脑协同发布/" itemprop="url">
+                  hexo博客多电脑协同发布
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-13T10:33:50+08:00" content="2016-09-13">
+              2016-09-13
+            </time>
+          </span>
 
           
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Hexo/" itemprop="url" rel="index">
+                    <span itemprop="name">Hexo</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/13/hexo博客多电脑协同发布/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/13/hexo博客多电脑协同发布/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/09/13/hexo博客多电脑协同发布/" class="leancloud_visitors" data-flag-title="hexo博客多电脑协同发布">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          公司，个人各有一台电脑，我在个人电脑搭建的hexo静态博客，有时候工作时候想临时修改点东西，或者灵感来了，这时候如果公司电脑和家里电脑能协同发布就好了，又或者电脑坏了，电脑重装系统了，我自己辛苦写的博客不能就这么没了。
+前提是个人电脑的博客环境已搭好，搭建方法：请看我这一篇博客    但是现在想要另
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/09/13/hexo博客多电脑协同发布/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/09/01/Android-Handler工作原理及源码学习/" itemprop="url">
+                  Android Handler工作原理及源码学习
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-01T16:15:28+08:00" content="2016-09-01">
+              2016-09-01
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/09/01/Android-Handler工作原理及源码学习/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/09/01/Android-Handler工作原理及源码学习/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/09/01/Android-Handler工作原理及源码学习/" class="leancloud_visitors" data-flag-title="Android Handler工作原理及源码学习">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p>一般使用方法是先在主线程创建一个Handler，等待接收消息</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    Handler handler = new Handler(new Handler.Callback()     &#123;</span><br><span class="line"><span class="meta">    @Override</span></span><br><span class="line">    public boolean handleMessage(Message msg) &#123;</span><br><span class="line">        <span class="keyword">return</span> true;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/09/01/Android-Handler工作原理及源码学习/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/06/27/Android透明状态栏设置/" itemprop="url">
+                  Android透明状态栏设置
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-27T11:23:10+08:00" content="2016-06-27">
+              2016-06-27
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/06/27/Android透明状态栏设置/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/06/27/Android透明状态栏设置/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/06/27/Android透明状态栏设置/" class="leancloud_visitors" data-flag-title="Android透明状态栏设置">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          应公司需求，为了让app界面在4.4版本之后的客户端更加美观和谐，欲使手机顶部状态栏(statusBar)与app主题色保持一致，所以想让statusBar保持透明，显示UI主题背景。
+
+适用于Android KITKAT(API 19) 之后
+
+使用主题Theme.Design.NoActionB
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/06/27/Android透明状态栏设置/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/05/09/Hexo-Github搭建个人博客/" itemprop="url">
+                  Hexo+Github搭建个人博客
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-05-09T15:19:45+08:00" content="2016-05-09">
+              2016-05-09
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Hexo/" itemprop="url" rel="index">
+                    <span itemprop="name">Hexo</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/05/09/Hexo-Github搭建个人博客/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/05/09/Hexo-Github搭建个人博客/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2016/05/09/Hexo-Github搭建个人博客/" class="leancloud_visitors" data-flag-title="Hexo+Github搭建个人博客">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          hexo + github搭建属于自己的博客前言：拥有一个属于自己的技术博客，在这里可以展现你自己的个性，发挥你自己的优点，可以做一些技术分享，作为一个程序员，能够养成一个常写技术博客的习惯，乐于分享，不仅能让你自己的技术更加精湛(很多技术或许你会，但当你能把别人说会时，理解绝对是更深一层)，久而久
+          ...
+
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/05/09/Hexo-Github搭建个人博客/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -380,10 +921,6 @@
   </section>
 
   
-  <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-  </nav>
-
 
 
           </div>
@@ -455,18 +992,21 @@
               <span class="links-of-author-item">
                 <a href="https://github.com/simonenfp" target="_blank" title="github">
                   
-                    <i class="fa fa-fw fa-globe"></i>
-                  
                   github
                 </a>
               </span>
             
               <span class="links-of-author-item">
-                <a href="http://www.zhihu.com/people/SimonQu" target="_blank" title="zhihu">
-                  
-                    <i class="fa fa-fw fa-globe"></i>
+                <a href="https://www.zhihu.com/people/simonenfp" target="_blank" title="zhihu">
                   
                   zhihu
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/5896461493/profile" target="_blank" title="weibo">
+                  
+                  weibo
                 </a>
               </span>
             
@@ -477,6 +1017,28 @@
         
 
         
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              基友
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://bracemao.github.io/" title="bracemao" target="_blank">bracemao</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://rjpacket.github.io/" title="rjpacket" target="_blank">rjpacket</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://yothon.github.io/" title="yothon" target="_blank">yothon</a>
+                </li>
+              
+            </ul>
+          </div>
         
 
       </section>
