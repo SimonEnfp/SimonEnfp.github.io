@@ -174,13 +174,12 @@ sidebar:
 
 
 # Blogrolls
-links_title: 基友
+links_title: Friends
 #links_layout: block
 #links_layout: inline
 links:
-  bracemao: https://bracemao.github.io/
-  rjpacket: https://rjpacket.github.io/
-  yothon: https://yothon.github.io/
+  stormzhang: http://stormzhang.com/
+  Hongyang: http://blog.csdn.net/lmj623565791
 
 
 # ---------------------------------------------------------------
