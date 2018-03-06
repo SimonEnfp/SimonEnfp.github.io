@@ -1,0 +1,803 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Monda:300,300italic,400,400italic,700,700italic|Lobster Two:300,300italic,400,400italic,700,700italic|PT Mono:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="自定义View," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：
+这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原理就是根据时间的流逝，计算进度，重绘View。主要分为4个部分：
+
+
+自定义View属性
+重写OnM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 自定义View——圆形进度">
+<meta property="og:url" content="http://simonenfp.github.io/2017/10/18/Android-自定义View——圆形进度/index.html">
+<meta property="og:site_name" content="SimonEnfp">
+<meta property="og:description" content="很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：
+这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原理就是根据时间的流逝，计算进度，重绘View。主要分为4个部分：
+
+
+自定义View属性
+重写OnM">
+<meta property="og:image" content="http://o6w24t5lg.bkt.clouddn.com/aa.gif">
+<meta property="og:updated_time" content="2018-03-06T09:19:12.234Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android 自定义View——圆形进度">
+<meta name="twitter:description" content="很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：
+这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原理就是根据时间的流逝，计算进度，重绘View。主要分为4个部分：
+
+
+自定义View属性
+重写OnM">
+<meta name="twitter:image" content="http://o6w24t5lg.bkt.clouddn.com/aa.gif">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"always"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Android 自定义View——圆形进度 | SimonEnfp </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SimonEnfp</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Android 自定义View——圆形进度
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2017-10-18T18:13:14+08:00" content="2017-10-18">
+              2017-10-18
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2017/10/18/Android-自定义View——圆形进度/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/10/18/Android-自定义View——圆形进度/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+             <span id="/2017/10/18/Android-自定义View——圆形进度/" class="leancloud_visitors" data-flag-title="Android 自定义View——圆形进度">
+               &nbsp; | &nbsp;
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               <span class="post-meta-item-text">阅读次数 </span>
+               <span class="leancloud-visitors-count"></span>
+              </span>
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>很多app在刚进入app时的欢迎页后的广告页右上角有一个点击跳过的按钮，印象中好像也见过圆形的点击跳过，还有圆形进度显示，准备在项目中也加入这个效果，于是自己花点时间写了个类似效果的自定义View，先来一发效果图：<br><img src="http://o6w24t5lg.bkt.clouddn.com/aa.gif" alt="此处输入图片的描述"></p>
+<p>这个View是个圆形，且有环形进度，中心有文字进度，所以我选择继承自原始View，原理就是根据时间的流逝，计算进度，重绘View。<br>主要分为4个部分：</p>
+<blockquote>
+<ul>
+<li>自定义View属性</li>
+<li>重写OnMeasure</li>
+<li>重写OnDraw</li>
+<li>更新进度</li>
+</ul>
+</blockquote>
+<h4 id="1-自定义View所需属性"><a href="#1-自定义View所需属性" class="headerlink" title="1. 自定义View所需属性"></a>1. 自定义View所需属性</h4><p> 在res/values/attr.xml中<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"CustomCircleProgress"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"centerText"</span> <span class="attr">format</span>=<span class="string">"string"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"centerTextColor"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"centerTextSize"</span> <span class="attr">format</span>=<span class="string">"dimension"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"circleBackground"</span> <span class="attr">format</span>=<span class="string">"color"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"ringProgressColor"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"ringProgressWidth"</span> <span class="attr">format</span>=<span class="string">"dimension"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"ringProgressBackground"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">"CustomView2"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"contentText"</span> <span class="attr">format</span>=<span class="string">"string"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"contentTextColor"</span> <span class="attr">format</span>=<span class="string">"color"</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">"contentTextSize"</span> <span class="attr">format</span>=<span class="string">"dimension"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>定义属性变量，构造方法中获取属性<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/*</span><br><span class="line">    * 中心文字</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> String mCenterText;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 中心文字颜色</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mCenterTextColor;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 中心文字大小</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mCenterTextSize;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆形背景</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mCircleBackground;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆环进度颜色</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mRingProgressColor;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆环进度背景颜色</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mRingProgressBackground;</span><br><span class="line">    <span class="comment">/*</span><br><span class="line">    * 圆环进度宽度</span><br><span class="line">    * */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">float</span> mRingProgressWidth;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="title">CustomCircleProgress</span><span class="params">(Context context, AttributeSet attributeSet, <span class="keyword">int</span> defStyleAttr)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context,attributeSet,defStyleAttr);</span><br><span class="line">        <span class="comment">//        获得定义的自定义样式属性</span></span><br><span class="line">        TypedArray a = context.obtainStyledAttributes(attributeSet,R.styleable.CustomCircleProgress,defStyleAttr,<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        mCenterText = a.getString(R.styleable.CustomCircleProgress_centerText);</span><br><span class="line">        mCenterTextColor =     a.getColor(R.styleable.CustomCircleProgress_centerTextColor,Color.WHITE);</span><br><span class="line">        mCenterTextSize = a.getDimensionPixelSize(R.styleable.CustomCircleProgress_centerTextSize,(<span class="keyword">int</span>) TypedValue.applyDimension(</span><br><span class="line">                TypedValue.COMPLEX_UNIT_SP, <span class="number">14</span>, getResources().getDisplayMetrics()));</span><br><span class="line">        mCircleBackground = a.getColor(R.styleable.CustomCircleProgress_circleBackground,Color.BLACK);</span><br><span class="line"></span><br><span class="line">        mRingProgressColor = a.getColor(R.styleable.CustomCircleProgress_ringProgressColor,Color.GRAY);</span><br><span class="line">        mRingProgressBackground = a.getColor(R.styleable.CustomCircleProgress_ringProgressBackground,Color.TRANSPARENT);</span><br><span class="line">        mRingProgressWidth = a.getDimensionPixelSize(R.styleable.CustomCircleProgress_ringProgressWidth,(<span class="keyword">int</span>) TypedValue.applyDimension(</span><br><span class="line">                TypedValue.COMPLEX_UNIT_DIP, <span class="number">4</span>, getResources().getDisplayMetrics()));</span><br><span class="line"></span><br><span class="line">        a.recycle();</span><br><span class="line">        initialize();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="2-重写OnMeasure"><a href="#2-重写OnMeasure" class="headerlink" title="2. 重写OnMeasure"></a>2. 重写OnMeasure</h4><p>由于继承自View，所以为了使wrap_content属性有效，必须重写OnMeasure。<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onMeasure</span><span class="params">(<span class="keyword">int</span> widthMeasureSpec, <span class="keyword">int</span> heightMeasureSpec)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">super</span>.onMeasure(widthMeasureSpec, heightMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);</span><br><span class="line">       <span class="keyword">int</span> heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);</span><br><span class="line"></span><br><span class="line">   <span class="comment">//如果宽或高的SpecMode为AT_MOST，就设置为默认宽高</span></span><br><span class="line">       <span class="keyword">if</span> (widthSpecMode == MeasureSpec.AT_MOST &amp;&amp; heightSpecMode == MeasureSpec.AT_MOST)&#123;</span><br><span class="line">           setMeasuredDimension(mDefaultRadius,mDefaultRadius);</span><br><span class="line">       &#125;<span class="keyword">else</span> <span class="keyword">if</span> (widthSpecMode == MeasureSpec.AT_MOST)&#123;</span><br><span class="line">           setMeasuredDimension(mDefaultRadius,heightSpecSize);</span><br><span class="line">       &#125;<span class="keyword">else</span> <span class="keyword">if</span> (heightSpecMode == MeasureSpec.AT_MOST)&#123;</span><br><span class="line">           setMeasuredDimension(widthSpecSize,mDefaultRadius);</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">int</span> width = getMeasuredWidth();</span><br><span class="line">       <span class="keyword">int</span> height = getMeasuredHeight();</span><br><span class="line">       <span class="comment">//宽和高取较小的那一个，并设置自定义圆形View尺寸</span></span><br><span class="line">       <span class="keyword">int</span> mViewSize = ((height &lt; width ? height : width));</span><br><span class="line">       setMeasuredDimension(mViewSize,mViewSize);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="3-重写OnDraw"><a href="#3-重写OnDraw" class="headerlink" title="3. 重写OnDraw"></a>3. 重写OnDraw</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//设置绘制区的矩形，为圆环外界留出圆环宽度一半的大小</span></span><br><span class="line">        mRectFBound.set(mRingProgressWidth/<span class="number">2</span>,mRingProgressWidth/<span class="number">2</span>,getWidth() - mRingProgressWidth/<span class="number">2</span>,getHeight() - mRingProgressWidth/<span class="number">2</span>);</span><br><span class="line">        mPaint.setAntiAlias(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//        画实心背景 半径为矩形区域减去圆环宽度的一半</span></span><br><span class="line">        mPaint.setColor(mCircleBackground);</span><br><span class="line">        mPaint.setStyle(Paint.Style.FILL);</span><br><span class="line">        canvas.drawCircle(mRectFBound.centerX(),mRectFBound.centerY(),mRectFBound.width()/<span class="number">2</span> - mRingProgressWidth/<span class="number">2</span>,mPaint);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">//画中心文字 中心文字起点为左下，文字绘制在圆形中间位置</span></span><br><span class="line">        mPaint.setColor(mCenterTextColor);</span><br><span class="line">        mPaint.setStyle(Paint.Style.FILL);</span><br><span class="line">        <span class="keyword">if</span> (mShowPercent)&#123;</span><br><span class="line">            mCenterText = String.valueOf(mPercent) + <span class="string">"%"</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mPaint.setTextSize(mCenterTextSize);</span><br><span class="line">        mPaint.getTextBounds(mCenterText,<span class="number">0</span>,mCenterText.length(),mTextRect);</span><br><span class="line">        canvas.drawText(mCenterText,mRectFBound.centerX() - mTextRect.width()/<span class="number">2</span>,mRectFBound.centerY() + mTextRect.height()/<span class="number">2</span>,mPaint);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//        画圆环   因为圆环有宽度，所以是环的中间位置与矩形四边相切</span></span><br><span class="line">        mPaint.setStrokeWidth(mRingProgressWidth);</span><br><span class="line">        mPaint.setStyle(Paint.Style.STROKE);</span><br><span class="line"></span><br><span class="line">        mPaint.setColor(mRingProgressBackground);</span><br><span class="line">        canvas.drawArc(mRectFBound,<span class="number">0</span>,<span class="number">360</span>,<span class="keyword">false</span>,mPaint);</span><br><span class="line"></span><br><span class="line">        mPaint.setColor(mRingProgressColor);</span><br><span class="line">        canvas.drawArc(mRectFBound,<span class="number">0</span>,mArc,<span class="keyword">false</span>,mPaint);</span><br><span class="line"></span><br><span class="line">        updateProgress();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="4-更新进度"><a href="#4-更新进度" class="headerlink" title="4. 更新进度"></a>4. 更新进度</h4><p>先定义一些更新进度需要的变量<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line"> * 圆环起始弧度,默认360</span><br><span class="line"> * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> mArc = <span class="number">360</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 当前进度</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">float</span> mCurrProgress;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度开始时刻</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">long</span> mStartTime ;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度是否已开始</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> mStart = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span><br><span class="line">   * 默认进度完成总时间。</span><br><span class="line">   */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> mDuration = <span class="number">3000</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度完成时间倒数</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">float</span> mDurationReciprocal;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 进度是否渐增，默认是递减</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> mIncreasing = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 是否显示百分比进度，默认不显示</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> mShowPercent = <span class="keyword">false</span>;</span><br><span class="line">  <span class="comment">/*</span><br><span class="line">  * 百分比进度，默认100%</span><br><span class="line">  * */</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> mPercent = <span class="number">100</span>;</span><br></pre></td></tr></table></figure></p>
+<p>这里有三个变量可以在使用view的自己设定mDuration（设置进度总时间）、mIncreasing(设置进度递增或递减)、mShowPercent（是否显示进度百分比）、<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span><br><span class="line">   * 进度开始</span><br><span class="line">   * */</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startRun</span><span class="params">()</span></span>&#123;</span><br><span class="line">       mStartTime =  AnimationUtils.currentAnimationTimeMillis();</span><br><span class="line">       mStart = <span class="keyword">true</span>;</span><br><span class="line">       mDurationReciprocal = <span class="number">1.0f</span> / (<span class="keyword">float</span>) mDuration;</span><br><span class="line">       updateProgress();</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">    <span class="comment">/*</span><br><span class="line">   * 更新进度</span><br><span class="line">   * */</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">updateProgress</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (computeProgressOffset())&#123;</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (mIncreasing)&#123;</span><br><span class="line">               mArc = Math.round(<span class="number">360</span> * mCurrProgress);</span><br><span class="line">               mPercent = Math.round(<span class="number">100</span> * mCurrProgress);</span><br><span class="line">           &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">               mArc = Math.round(<span class="number">360</span> * (<span class="number">1</span>-mCurrProgress));</span><br><span class="line">               mPercent = Math.round(<span class="number">100</span> * (<span class="number">1</span>-mCurrProgress));</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           postInvalidate();</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/*</span><br><span class="line">   * 根据时间流逝计算进度比例</span><br><span class="line">   * */</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">computeProgressOffset</span><span class="params">()</span></span>&#123;</span><br><span class="line">       <span class="keyword">if</span> (!mStart)&#123;</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">int</span> timePass = (<span class="keyword">int</span>) (AnimationUtils.currentAnimationTimeMillis() - mStartTime);</span><br><span class="line">       <span class="keyword">if</span> (timePass &lt; mDuration)&#123;</span><br><span class="line">           mCurrProgress = timePass * mDurationReciprocal;</span><br><span class="line">       &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">           mStart = <span class="keyword">false</span>;</span><br><span class="line">           mCurrProgress = <span class="number">1</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure></p>
+<p>由于是在一定的时间内更新完成进度(进度0~1)，所以可以在更新进度的时候先通过 <strong>当前系统时间 - 开始更新进度时间</strong> 计算已经过去的时间timePass，这样就根据时间的流逝计算占总进度的比例，每次更新进度时调用computeProgressOffset()，判断是否完成进度，如果未完成(即时间未到)，设置已完成进度，返回true，调用postInvalidate()更新View；更新完后又会调用updateProgress()，如此循环；一旦timePass超过或等于设定时间，就完成了，设置进度为1，此时仍需要更新一次，所以computeProgressOffset()仍然返回true，但更新标识mStart应为false了，以此终止更新。<br>这样简单的圆形进度基本功能就实现了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/自定义View/" rel="tag">#自定义View</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/09/13/hexo博客多电脑协同发布/" rel="next" title="hexo博客多电脑协同发布">
+                <i class="fa fa-chevron-left"></i> hexo博客多电脑协同发布
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/10/18/Android-自定义View——圆形进度/"
+           data-title="Android 自定义View——圆形进度" data-url="http://simonenfp.github.io/2017/10/18/Android-自定义View——圆形进度/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/uploads/avatar.jpg"
+               alt="SimonEnfp" />
+          <p class="site-author-name" itemprop="name">SimonEnfp</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/simonenfp" target="_blank" title="github">
+                  
+                  github
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Friends
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://stormzhang.com/" title="stormzhang" target="_blank">stormzhang</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.csdn.net/lmj623565791" title="Hongyang" target="_blank">Hongyang</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-自定义View所需属性"><span class="nav-number">1.</span> <span class="nav-text">1. 自定义View所需属性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-重写OnMeasure"><span class="nav-number">2.</span> <span class="nav-text">2. 重写OnMeasure</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-重写OnDraw"><span class="nav-number">3.</span> <span class="nav-text">3. 重写OnDraw</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-更新进度"><span class="nav-number">4.</span> <span class="nav-text">4. 更新进度</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">SimonEnfp</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"simonenfp"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+  
+
+
+
+
+
+  
+  
+  
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("joaeuuc4hsqudUUwx4gIvGF6-gzGzoHsz", "E9UJsJpw1omCHuS22PdSpKoh");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+</body>
+</html>
