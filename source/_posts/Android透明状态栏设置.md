@@ -1,6 +1,6 @@
 ---
 title: Android透明状态栏设置
-date: 2016-06-27 11:23:10
+date: 2017-01-27 11:23:10
 tags: 状态栏
 categories: Android
 ---

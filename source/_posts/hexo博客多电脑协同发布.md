@@ -1,6 +1,6 @@
 ---
 title: hexo博客多电脑协同发布
-date: 2016-09-13 10:33:50
+date: 2017-09-13 10:33:50
 tags: Hexo博客
 categories: Hexo
 ---

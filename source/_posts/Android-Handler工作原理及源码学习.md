@@ -1,6 +1,6 @@
 ﻿---
 title: Android Handler工作原理及源码学习
-date: 2016-09-01 16:15:28
+date: 2017-04-01 16:15:28
 tags: Handler、Looper
 categories: Android
 ---

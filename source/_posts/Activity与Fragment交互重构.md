@@ -1,6 +1,6 @@
 ---
 title: Activity与Fragment交互重构
-date: 2016-05-19 12:48:08
+date: 2016-12-19 12:48:08
 tags: activity fragment
 categories: Android
 ---
